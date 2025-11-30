@@ -113,7 +113,7 @@ const itineraryData = [
         subtitle: '巴士 (東西向移動)201 203 205 ',
         tips: '若是搭市巴士，一定要注意「後門上、前門下」的搭車規則（前門下車刷卡／付費）',
         notes: '搭乘巴士前往「河源町今出川」站。',
-        coords: 'Shimogamo Shrine'
+        coords: 'https://www.google.com/maps/dir/%E6%99%B4%E6%98%8E%E7%A5%9E%E7%A4%BE806+Seimeicho,+Kamigyo+Ward,+Kyoto,+602-8222%E6%97%A5%E6%9C%AC/%E6%97%A5%E6%9C%AC%E4%BA%AC%E9%83%BD%E5%BA%9C%E4%BA%AC%E9%83%BD%E5%B8%82%E5%B7%A6%E4%BA%AC%E5%8D%80+Shimogamo+Izumikawacho,+%EF%BC%95%EF%BC%99+%E8%B3%80%E8%8C%82%E5%BE%A1%E7%A5%96%E7%A5%9E%E7%A4%BE(%E4%B8%8B%E9%B4%A8%E7%A5%9E%E7%A4%BE)/@35.0244931,135.7609271,14.75z/data=!4m15!4m14!1m5!1m1!1s0x600107df798f7951:0xf28aea911a6811d0!2m2!1d135.7511802!2d35.02776!1m5!1m1!1s0x6001084046fc8d7f:0x3b83b327fe5cdcc!2m2!1d135.7730068!2d35.0389778!3e3!5i1?authuser=0&entry=ttu&g_ep=EgoyMDI1MTEyMy4xIKXMDSoASAFQAw%3D%3D'
       },
       {
         type: 'attraction',
@@ -637,17 +637,23 @@ const WeatherWidget = ({ weather }) => {
   );
 };
 
-const NavButton = ({ coords }) => (
-  <a 
-    href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(coords)}`}
-    target="_blank"
-    rel="noopener noreferrer"
-    className="mt-3 flex items-center justify-center w-full py-2 bg-slate-100 text-slate-600 rounded-lg text-sm font-bold hover:bg-slate-200 transition-colors gap-2"
-  >
-    <ExternalLink size={14} />
-    導航 Go
-  </a>
-);
+// Modified NavButton to check if coords is a URL
+const NavButton = ({ coords }) => {
+  const isUrl = coords.startsWith('http');
+  const href = isUrl ? coords : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(coords)}`;
+  
+  return (
+    <a 
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="mt-3 flex items-center justify-center w-full py-2 bg-slate-100 text-slate-600 rounded-lg text-sm font-bold hover:bg-slate-200 transition-colors gap-2"
+    >
+      <ExternalLink size={14} />
+      導航 Go
+    </a>
+  );
+};
 
 const EventCard = ({ event }) => {
   const getIcon = () => {

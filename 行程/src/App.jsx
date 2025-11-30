@@ -544,18 +544,6 @@ const itineraryData = [
         highlight: '營業時間短: 11:00-14:00',
         coords: 'MooKEN Osaka'
       },
-      // --- 新增行程: 綱敷天神社御旅社 ---
-      {
-        type: 'attraction',
-        time: '13:00',
-        title: '綱敷天神社 御旅社',
-        subtitle: '梅田茶屋町',
-        highlight: '新增景點',
-        tips: '位在梅田鬧區的神社，適合散步。祈求學業進步。',
-        notes: '就在 NU 茶屋町附近，參拜後可步行至梅田藍天大廈。',
-        coords: 'Tsunashiki Tenjinsha Otabisha'
-      },
-      // ---
       {
         type: 'attraction',
         time: '15:00',
@@ -589,6 +577,18 @@ const itineraryData = [
         tips: '必拍: 獅子殿 (據說能吸走厄運，招來好運)',
         coords: 'Namba Yasaka Shrine'
       },
+            // --- 新增行程: 綱敷天神社御旅社 ---
+      {
+        type: 'attraction',
+        time: '13:00',
+        title: '綱敷天神社 御旅社',
+        subtitle: '梅田茶屋町',
+        highlight: '新增景點',
+        tips: '位在梅田鬧區的神社，適合散步。祈求學業進步。',
+        notes: '就在 NU 茶屋町附近，參拜後可步行至梅田藍天大廈。',
+        coords: 'Tsunashiki Tenjinsha Otabisha'
+      },
+      // ---
       {
         type: 'food',
         time: '18:00',
@@ -1040,5 +1040,6 @@ const App = () => {
     </div>
   );
 };
+
 
 export default App;

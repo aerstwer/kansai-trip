@@ -191,7 +191,8 @@ const itineraryData = [
         time: '20:30',
         title: 'ENEN 燒肉',
         subtitle: '晚餐',
-        tips: '必點: 手毬肉壽司 (需預約)',,
+        tips: '必點: 手毬肉壽司 (需預約)',
+        highlight: '已預定(不能遲到)',
         coords: 'https://maps.app.goo.gl/wKZtZ6Vfz6KTLAFU9'
       }
     ]

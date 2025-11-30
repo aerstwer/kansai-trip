@@ -239,7 +239,7 @@ const itineraryData = [
         title: '吉卜力公園 (Ghibli Park)',
         subtitle: '大倉庫入場',
         highlight: '請準時入場',
-        notes: '攻略: 入場先排該拍的場景。<br/><br/>👉 <b><a href="https://quickticket.moala.fun/books?id=88935175-f46f-44e8-b25c-7d11a0ec16f2" target="_blank" style="color: #2563eb; text-decoration: underline;">點此開啟 QuickTicket 電子票券</a></b>',
+        notes: '攻略: 入場先排該拍的場景。<br/><br/>👉 <b><a href="https://quickticket.moala.fun/books?id=88935175-f46f-44e8-b25c-7d11a0ec16f2" target="_blank" style="color: #60a5fa; text-decoration: underline;">點此開啟 QuickTicket 電子票券</a></b>',
         coords: 'Ghibli Park'
       },
       {
@@ -247,7 +247,7 @@ const itineraryData = [
         time: 'INFO',
         title: '園區地圖',
         subtitle: '主要區域分佈',
-        notes: '超連結: <a href="https://lurl.cc/eqABE" target="_blank" style="color: #2563eb; text-decoration: underline;">點這邊開啟地圖</a>',
+        notes: '超連結: <a href="https://lurl.cc/eqABE" target="_blank" style="color: #60a5fa; text-decoration: underline;">點這邊開啟地圖</a>',
         tips: '青春之丘(5), 吉卜力大倉庫(4), 魔女之谷(2), 動動力森林(1)。',
         coords: 'Ghibli Park'
       },
@@ -653,21 +653,20 @@ const LiveWeatherWidget = () => {
     return () => clearInterval(interval);
   }, []);
 
-  if (loading) return <div className="flex items-center gap-1 text-white/80 text-xs"><Loader2 size={12} className="animate-spin"/> 載入氣象...</div>;
+  if (loading) return <div className="flex items-center gap-1 text-slate-400 text-xs"><Loader2 size={12} className="animate-spin"/> 載入氣象...</div>;
   if (!weather) return null;
 
   // Determine icon based on weather code
   const code = weather.weathercode;
   let Icon = Sun;
-  let label = "晴朗";
   
-  if (code > 0 && code <= 3) { Icon = CloudSun; label = "多雲"; }
-  else if (code > 3 && code < 70) { Icon = CloudRain; label = "有雨"; }
-  else if (code >= 70) { Icon = Snowflake; label = "降雪"; }
+  if (code > 0 && code <= 3) { Icon = CloudSun; }
+  else if (code > 3 && code < 70) { Icon = CloudRain; }
+  else if (code >= 70) { Icon = Snowflake; }
 
   return (
-    <div className="bg-white/20 backdrop-blur-sm px-3 py-1.5 rounded-full flex items-center gap-2 text-white text-xs font-bold border border-white/10 shadow-sm">
-      <Icon size={14} className="text-yellow-300 drop-shadow-sm" />
+    <div className="bg-slate-800 px-3 py-1.5 rounded-full flex items-center gap-2 text-slate-100 text-xs font-bold border border-slate-700 shadow-sm">
+      <Icon size={14} className="text-yellow-300" />
       <span>大阪現在 {Math.round(weather.temperature)}°C</span>
     </div>
   );
@@ -677,8 +676,8 @@ const LiveWeatherWidget = () => {
 const EstimatedWeatherLabel = ({ weather }) => {
   const Icon = weather.condition === 'sunny' ? Sun : CloudRain;
   return (
-    <div className="flex items-center gap-1.5 text-slate-400 text-xs bg-slate-100 px-2 py-1 rounded-md">
-      <Icon size={12} className={weather.condition === 'sunny' ? 'text-orange-400' : 'text-blue-400'} />
+    <div className="flex items-center gap-1.5 text-slate-400 text-xs bg-slate-900 px-3 py-1.5 rounded-full border border-slate-800">
+      <Icon size={12} className={weather.condition === 'sunny' ? 'text-amber-400' : 'text-blue-400'} />
       <span>{weather.temp} (12月均溫)</span>
     </div>
   );
@@ -693,9 +692,9 @@ const NavButton = ({ coords }) => {
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      className="mt-3 flex items-center justify-center w-full py-2 bg-slate-100 text-slate-600 rounded-lg text-sm font-bold hover:bg-slate-200 transition-colors gap-2"
+      className="mt-3 flex items-center justify-center w-full py-2.5 bg-slate-800 text-slate-200 rounded-lg text-sm font-bold hover:bg-slate-700 transition-colors gap-2 border border-slate-700"
     >
-      <ExternalLink size={14} />
+      <ExternalLink size={14} className="text-emerald-400" />
       導航 Go
     </a>
   );
@@ -704,54 +703,54 @@ const NavButton = ({ coords }) => {
 const EventCard = ({ event }) => {
   const getIcon = () => {
     switch(event.type) {
-      case 'food': return <Utensils size={18} className="text-orange-500" />;
-      case 'transport': return <Train size={18} className="text-indigo-500" />;
-      case 'hotel': return <Bed size={18} className="text-purple-500" />;
-      case 'info': return <Info size={18} className="text-cyan-500" />;
-      default: return <MapPin size={18} className="text-emerald-500" />;
+      case 'food': return <Utensils size={18} className="text-orange-400" />;
+      case 'transport': return <Train size={18} className="text-blue-400" />;
+      case 'hotel': return <Bed size={18} className="text-purple-400" />;
+      case 'info': return <Info size={18} className="text-cyan-400" />;
+      default: return <MapPin size={18} className="text-emerald-400" />;
     }
   };
 
   const getBorderColor = () => {
      switch(event.type) {
-      case 'food': return 'border-l-orange-400';
-      case 'transport': return 'border-l-indigo-400';
-      case 'hotel': return 'border-l-purple-400';
-      case 'info': return 'border-l-cyan-400';
-      default: return 'border-l-emerald-400';
+      case 'food': return 'border-l-orange-500';
+      case 'transport': return 'border-l-blue-500';
+      case 'hotel': return 'border-l-purple-500';
+      case 'info': return 'border-l-cyan-500';
+      default: return 'border-l-emerald-500';
     }
   };
 
   return (
-    <div className={`bg-white rounded-xl p-4 shadow-sm mb-4 border-l-4 ${getBorderColor()} relative overflow-hidden`}>
+    <div className={`bg-slate-900 rounded-xl p-4 shadow-lg mb-4 border-l-4 ${getBorderColor()} relative overflow-hidden border-t border-r border-b border-slate-800`}>
       <div className="flex justify-between items-start mb-2">
         <div className="flex items-center gap-2">
-          <div className="bg-slate-50 p-1.5 rounded-full">
+          <div className="bg-slate-800 p-1.5 rounded-full border border-slate-700">
             {getIcon()}
           </div>
-          <span className="text-xs font-bold text-slate-400 bg-slate-100 px-2 py-0.5 rounded">
+          <span className="text-xs font-bold text-slate-400 bg-slate-800 px-2 py-0.5 rounded border border-slate-700">
             {event.time}
           </span>
         </div>
       </div>
       
-      <h3 className="text-lg font-bold text-slate-800 mb-1">{event.title}</h3>
-      <p className="text-slate-500 text-sm mb-2">{event.subtitle}</p>
+      <h3 className="text-lg font-bold text-slate-100 mb-1">{event.title}</h3>
+      <p className="text-slate-400 text-sm mb-2">{event.subtitle}</p>
       
       {event.highlight && (
-        <div className="inline-block bg-red-50 text-red-500 text-xs font-bold px-2 py-1 rounded mb-2">
+        <div className="inline-block bg-rose-950/50 text-rose-200 text-xs font-bold px-2 py-1 rounded mb-2 border border-rose-900/50">
           {event.highlight}
         </div>
       )}
       
       {event.tips && (
-        <div className="bg-amber-50 p-3 rounded-lg text-amber-700 text-xs leading-relaxed mb-2 border border-amber-100">
-          <span className="font-bold block mb-1">💡 導遊筆記：</span>
+        <div className="bg-amber-950/30 p-3 rounded-lg text-amber-200 text-xs leading-relaxed mb-2 border border-amber-900/50">
+          <span className="font-bold block mb-1 text-amber-400">💡 導遊筆記：</span>
           <div dangerouslySetInnerHTML={{ __html: event.tips }} />
         </div>
       )}
       
-      {/* 支援 HTML 解析 */}
+      {/* 支援 HTML 解析，讓超連結與地圖圖片生效 */}
       {event.notes && (
         <div className="text-slate-400 text-xs mb-2 leading-relaxed" dangerouslySetInnerHTML={{ __html: event.notes }} />
       )}
@@ -759,8 +758,8 @@ const EventCard = ({ event }) => {
       {/* Special handling for map image */}
       {event.type === 'info' && event.title.includes('地圖') ? (
         <div className="mt-3">
-          <p className="text-sm font-bold text-cyan-700 mb-2">園區配置參考：</p>
-          <div className="w-full bg-slate-100 rounded-lg flex items-center justify-center h-32 text-slate-400 text-xs">
+          <p className="text-sm font-bold text-cyan-400 mb-2">園區配置參考：</p>
+          <div className="w-full bg-slate-800 rounded-lg flex items-center justify-center h-32 text-slate-500 text-xs border border-slate-700">
              (點擊上方連結開啟地圖)
           </div>
         </div>
@@ -868,19 +867,19 @@ const ToolsSection = ({ currentDay }) => {
 
   return (
     <div className="pb-24 px-4 pt-6 max-w-md mx-auto">
-      <div className="bg-white rounded-3xl shadow-sm border border-slate-100 p-6">
-        <h3 className="text-xl font-bold text-slate-800 mb-6 flex items-center gap-2">
-            <div className="bg-rose-100 p-2 rounded-full text-rose-600"><CreditCard size={20}/></div>
+      <div className="bg-slate-900 rounded-3xl shadow-lg border border-slate-800 p-6">
+        <h3 className="text-xl font-bold text-slate-100 mb-6 flex items-center gap-2">
+            <div className="bg-slate-800 p-2 rounded-full text-emerald-400 border border-slate-700"><CreditCard size={20}/></div>
             旅費記帳本
         </h3>
         
         {isOffline ? (
-             <div className="mb-4 p-3 bg-amber-50 text-amber-700 text-xs rounded-lg border border-amber-200 flex items-center gap-2">
+             <div className="mb-4 p-3 bg-amber-950/30 text-amber-400 text-xs rounded-lg border border-amber-900/50 flex items-center gap-2">
                  <WifiOff size={16} />
                  <span><strong>離線模式</strong>：資料僅存在此裝置。</span>
              </div>
         ) : (
-             <div className="mb-4 px-2 text-xs text-emerald-600 flex items-center gap-1">
+             <div className="mb-4 px-2 text-xs text-emerald-400 flex items-center gap-1">
                  <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
                  雲端同步中
              </div>
@@ -888,38 +887,38 @@ const ToolsSection = ({ currentDay }) => {
 
         <form onSubmit={handleAddExpense} className="flex flex-col gap-2 mb-6">
             <div className="relative">
-              <select value={expenseDay} onChange={(e) => setExpenseDay(Number(e.target.value))} className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-rose-400 appearance-none text-slate-700 font-medium">
+              <select value={expenseDay} onChange={(e) => setExpenseDay(Number(e.target.value))} className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-3 text-sm outline-none focus:border-emerald-500 appearance-none text-slate-200 font-medium">
                 {itineraryData.map(d => <option key={d.day} value={d.day}>Day {d.day} - {d.date}</option>)}
               </select>
-              <ChevronDown size={16} className="absolute right-3 top-3 text-slate-400 pointer-events-none"/>
+              <ChevronDown size={16} className="absolute right-3 top-3.5 text-slate-500 pointer-events-none"/>
             </div>
             <div className="flex gap-2">
-              <input type="text" placeholder="項目" className="flex-1 bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-rose-400" value={item} onChange={(e) => setItem(e.target.value)}/>
-              <input type="number" placeholder="¥" className="w-24 bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-rose-400" value={amount} onChange={(e) => setAmount(e.target.value)}/>
-              <button type="submit" className="bg-rose-500 text-white rounded-lg px-3 py-2 font-bold shadow-lg shadow-rose-200 active:scale-95 transition-transform">+</button>
+              <input type="text" placeholder="項目" className="flex-1 bg-slate-800 border border-slate-700 rounded-lg px-3 py-3 text-sm outline-none focus:border-emerald-500 text-white placeholder-slate-500" value={item} onChange={(e) => setItem(e.target.value)}/>
+              <input type="number" placeholder="¥" className="w-24 bg-slate-800 border border-slate-700 rounded-lg px-3 py-3 text-sm outline-none focus:border-emerald-500 text-white placeholder-slate-500" value={amount} onChange={(e) => setAmount(e.target.value)}/>
+              <button type="submit" className="bg-emerald-600 text-white rounded-lg px-3 py-2 font-bold shadow-lg shadow-emerald-900/20 active:scale-95 transition-transform hover:bg-emerald-500">+</button>
             </div>
         </form>
 
         <div className="space-y-4 mb-4 max-h-80 overflow-y-auto pr-1">
-            {loading ? <p className="text-center text-slate-400 text-sm">載入中...</p> : Object.keys(expensesByDay).length === 0 ? <p className="text-center text-slate-300 text-sm py-4">還沒有記帳紀錄</p> : 
+            {loading ? <p className="text-center text-slate-500 text-sm">載入中...</p> : Object.keys(expensesByDay).length === 0 ? <p className="text-center text-slate-500 text-sm py-4">還沒有記帳紀錄</p> : 
                 Object.keys(expensesByDay).sort((a, b) => b - a).map(dayKey => {
                     const dayExpenses = expensesByDay[dayKey];
                     const dayTotal = dayExpenses.reduce((sum, ex) => sum + ex.amount, 0);
                     const dayInfo = itineraryData.find(d => d.day === Number(dayKey));
                     const dateLabel = dayInfo ? dayInfo.date : '未分類日期';
                     return (
-                        <div key={dayKey} className="bg-slate-50 rounded-lg p-3">
-                            <div className="flex justify-between items-center mb-2 pb-2 border-b border-slate-200/60">
-                                <span className="text-xs font-bold text-slate-500 bg-slate-200 px-2 py-0.5 rounded">Day {dayKey} • {dateLabel}</span>
-                                <span className="text-xs font-bold text-slate-400">¥{dayTotal.toLocaleString()}</span>
+                        <div key={dayKey} className="bg-slate-800/50 rounded-lg p-3 border border-slate-800">
+                            <div className="flex justify-between items-center mb-2 pb-2 border-b border-slate-700">
+                                <span className="text-xs font-bold text-slate-400 bg-slate-800 px-2 py-0.5 rounded border border-slate-700">Day {dayKey} • {dateLabel}</span>
+                                <span className="text-xs font-bold text-emerald-400">¥{dayTotal.toLocaleString()}</span>
                             </div>
                             <div className="space-y-2">
                                 {dayExpenses.map(ex => (
                                     <div key={ex.id} className="flex justify-between items-center">
-                                        <span className="text-slate-700 text-sm">{ex.item}</span>
+                                        <span className="text-slate-300 text-sm">{ex.item}</span>
                                         <div className="flex items-center gap-3">
-                                            <span className="text-slate-800 font-bold text-sm">¥{ex.amount.toLocaleString()}</span>
-                                            <button onClick={() => handleDelete(ex.id)} className="text-slate-300 hover:text-red-400"><Trash size={12}/></button>
+                                            <span className="text-slate-100 font-bold text-sm">¥{ex.amount.toLocaleString()}</span>
+                                            <button onClick={() => handleDelete(ex.id)} className="text-slate-500 hover:text-red-400"><Trash size={12}/></button>
                                         </div>
                                     </div>
                                 ))}
@@ -929,9 +928,9 @@ const ToolsSection = ({ currentDay }) => {
                 })
             }
         </div>
-        <div className="bg-slate-800 text-white rounded-xl p-4 flex justify-between items-center shadow-lg shadow-slate-200">
-            <span className="text-sm text-slate-300">旅程總花費</span>
-            <span className="text-xl font-bold">¥ {total.toLocaleString()}</span>
+        <div className="bg-slate-800 text-white rounded-xl p-4 flex justify-between items-center shadow-lg border border-slate-700">
+            <span className="text-sm text-slate-400">旅程總花費</span>
+            <span className="text-xl font-bold text-emerald-400">¥ {total.toLocaleString()}</span>
         </div>
       </div>
     </div>
@@ -942,22 +941,22 @@ const ToolsSection = ({ currentDay }) => {
 const InfoSection = () => {
   return (
     <div className="pb-24 px-4 pt-6 max-w-md mx-auto">
-      <div className="bg-white rounded-xl shadow-sm border-l-4 border-rose-400 p-5 mb-4">
-        <h3 className="text-lg font-bold text-slate-800 mb-3 flex items-center gap-2"><Bed size={20} className="text-rose-500" />住宿資訊</h3>
+      <div className="bg-slate-900 rounded-xl shadow-lg border-l-4 border-rose-500 p-5 mb-4 border-t border-r border-b border-slate-800">
+        <h3 className="text-lg font-bold text-slate-100 mb-3 flex items-center gap-2"><Bed size={20} className="text-rose-500" />住宿資訊</h3>
         <div className="mb-4">
-          <p className="font-bold text-slate-700 text-sm">京都: Rihga Gran Kyoto</p>
-          <p className="text-xs text-slate-500 mb-2">〒601-8003 京都府京都市南区 東九条西山王町1</p>
+          <p className="font-bold text-slate-200 text-sm">京都: Rihga Gran Kyoto</p>
+          <p className="text-xs text-slate-400 mb-2">〒601-8003 京都府京都市南区 東九条西山王町1</p>
           <NavButton coords="Rihga Gran Kyoto" />
         </div>
-        <div className="border-t border-slate-100 pt-3">
-          <p className="font-bold text-slate-700 text-sm">大阪: PG 黑門公寓酒店</p>
-          <p className="text-xs text-slate-500 mb-2">〒542-0072 大阪市中央区 高津 3-3-22</p>
+        <div className="border-t border-slate-800 pt-3">
+          <p className="font-bold text-slate-200 text-sm">大阪: PG 黑門公寓酒店</p>
+          <p className="text-xs text-slate-400 mb-2">〒542-0072 大阪市中央区 高津 3-3-22</p>
           <NavButton coords="PG Kuromon Apartment" />
         </div>
       </div>
-      <div className="bg-white rounded-xl shadow-sm border-l-4 border-rose-400 p-5">
-        <h3 className="text-lg font-bold text-slate-800 mb-3 flex items-center gap-2"><CheckSquare size={20} className="text-rose-500" />必備清單</h3>
-        <ul className="text-sm text-slate-600 space-y-2 list-none">
+      <div className="bg-slate-900 rounded-xl shadow-lg border-l-4 border-rose-500 p-5 border-t border-r border-b border-slate-800">
+        <h3 className="text-lg font-bold text-slate-100 mb-3 flex items-center gap-2"><CheckSquare size={20} className="text-rose-500" />必備清單</h3>
+        <ul className="text-sm text-slate-400 space-y-2 list-none">
           <li>□ 環保筷 + 碗 (吃泡麵用)</li><li>□ 洗衣球 (民宿可以洗衣服)</li><li>□ ESIM / 網卡</li><li>□ 暖暖包 (12月很冷)</li><li>□ 牙刷 (有些環保飯店不提供)</li>
         </ul>
       </div>
@@ -972,28 +971,28 @@ const App = () => {
   const currentDayData = itineraryData.find(d => d.day === selectedDay);
 
   return (
-    <div className="min-h-screen bg-[#F2F1F6] font-sans text-slate-800 pb-24">
-      {/* Header - Pink Theme */}
-      <header className="sticky top-0 bg-rose-400 text-white z-50 px-5 pt-8 pb-4 shadow-md rounded-b-3xl">
+    <div className="min-h-screen bg-slate-950 font-sans text-slate-200 pb-24">
+      {/* Header - Dark Theme */}
+      <header className="sticky top-0 bg-slate-900 text-white z-50 px-5 pt-8 pb-4 shadow-xl border-b border-slate-800 rounded-b-3xl">
         <div className="flex justify-between items-end mb-4">
           <div>
-            <h1 className="text-2xl font-black tracking-tight">關西補遺憾之旅</h1>
-            <p className="text-xs opacity-90 font-medium">12/20 (六) - 12/28 (日) • 9天8夜</p>
+            <h1 className="text-2xl font-black tracking-tight text-slate-100">關西補遺憾之旅</h1>
+            <p className="text-xs text-slate-400 font-medium">12/20 (六) - 12/28 (日) • 9天8夜</p>
           </div>
           {/* Live Weather Widget in Header */}
           <div className="flex flex-col items-end gap-1">
              <LiveWeatherWidget />
-             <button onClick={() => setActiveTab('info')} className={`flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold transition-all ${activeTab === 'info' ? 'bg-slate-800 text-white' : 'bg-white/20 text-white hover:bg-white/30'}`}>
+             <button onClick={() => setActiveTab('info')} className={`flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold transition-all ${activeTab === 'info' ? 'bg-rose-600 text-white' : 'bg-slate-800 text-slate-300 hover:bg-slate-700 border border-slate-700'}`}>
                <Info size={14} /> 資訊
              </button>
           </div>
         </div>
 
-        {/* Day Selector - White Pills */}
+        {/* Day Selector - Dark Pills */}
         {activeTab === 'itinerary' && (
           <div className="flex overflow-x-auto gap-2 pb-1 scrollbar-hide -mx-2 px-2">
             {itineraryData.map((d) => (
-              <button key={d.day} onClick={() => setSelectedDay(d.day)} className={`flex-shrink-0 px-4 py-1.5 rounded-full text-xs font-bold transition-all duration-200 ${selectedDay === d.day ? 'bg-white text-rose-500 shadow-md transform scale-105' : 'bg-white/30 text-white hover:bg-white/50'}`}>
+              <button key={d.day} onClick={() => setSelectedDay(d.day)} className={`flex-shrink-0 px-4 py-1.5 rounded-full text-xs font-bold transition-all duration-200 border border-transparent ${selectedDay === d.day ? 'bg-rose-600 text-white shadow-lg shadow-rose-900/50 transform scale-105 border-rose-500' : 'bg-slate-800 text-slate-400 hover:bg-slate-700 border-slate-700'}`}>
                 D{d.day} {d.location.split('/')[0]}
               </button>
             ))}
@@ -1007,7 +1006,7 @@ const App = () => {
           <div className="px-5 animate-fade-in">
             {/* Day Header */}
             <div className="mb-4 flex justify-between items-center">
-              <h2 className="text-lg font-bold text-slate-700 border-l-4 border-rose-400 pl-3">{currentDayData.date} 行程</h2>
+              <h2 className="text-lg font-bold text-slate-200 border-l-4 border-rose-500 pl-3">{currentDayData.date} 行程</h2>
               <EstimatedWeatherLabel weather={currentDayData.weather} />
             </div>
             {/* Timeline Events */}
@@ -1025,20 +1024,20 @@ const App = () => {
         )}
       </main>
 
-      {/* Floating Bottom Nav */}
-      <nav className="fixed bottom-6 left-1/2 -translate-x-1/2 bg-white/90 backdrop-blur-md text-slate-400 px-6 py-3 rounded-full shadow-xl border border-slate-100 flex items-center gap-8 z-50">
-        <button onClick={() => setActiveTab('itinerary')} className={`flex flex-col items-center gap-0.5 transition-colors ${activeTab === 'itinerary' ? 'text-rose-500' : 'hover:text-slate-600'}`}>
+      {/* Floating Bottom Nav - Dark Mode */}
+      <nav className="fixed bottom-6 left-1/2 -translate-x-1/2 bg-slate-900/90 backdrop-blur-md text-slate-400 px-6 py-3 rounded-full shadow-2xl border border-slate-700 flex items-center gap-8 z-50">
+        <button onClick={() => setActiveTab('itinerary')} className={`flex flex-col items-center gap-0.5 transition-colors ${activeTab === 'itinerary' ? 'text-rose-500' : 'hover:text-slate-200'}`}>
           <Calendar size={22} strokeWidth={activeTab === 'itinerary' ? 2.5 : 2} />
           <span className="text-[10px] font-bold">行程</span>
         </button>
-        <div className="w-px h-6 bg-slate-200"></div>
-        <button onClick={() => setActiveTab('tools')} className={`flex flex-col items-center gap-0.5 transition-colors ${activeTab === 'tools' ? 'text-rose-500' : 'hover:text-slate-600'}`}>
+        <div className="w-px h-6 bg-slate-700"></div>
+        <button onClick={() => setActiveTab('tools')} className={`flex flex-col items-center gap-0.5 transition-colors ${activeTab === 'tools' ? 'text-rose-500' : 'hover:text-slate-200'}`}>
           <CreditCard size={22} strokeWidth={activeTab === 'tools' ? 2.5 : 2} />
           <span className="text-[10px] font-bold">記帳</span>
         </button>
       </nav>
 
-      <style>{` .scrollbar-hide::-webkit-scrollbar { display: none; } .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; } `}</style>
+      <style>{` .scrollbar-hide::-webkit-scrollbar { display: none; } .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; } body { background-color: #020617; } `}</style>
     </div>
   );
 };

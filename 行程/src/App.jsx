@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { MapPin, Calendar, Utensils, Train, Sun, CloudRain, Info, Phone, CreditCard, Plane, Bed, Map, ExternalLink, Trash, WifiOff, Clock, Camera, ChevronDown, CheckSquare } from 'lucide-react';
+import { MapPin, Calendar, Utensils, Train, Sun, CloudRain, Info, Phone, CreditCard, Plane, Bed, Map, ExternalLink, Trash, WifiOff, Clock, Camera, ChevronDown, CheckSquare, Cloud, CloudSun, Snowflake, Loader2 } from 'lucide-react';
 import { initializeApp } from 'firebase/app';
 import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, deleteDoc, doc, Timestamp } from 'firebase/firestore';
 import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from 'firebase/auth';
@@ -32,7 +32,7 @@ const itineraryData = [
   {
     day: 1,
     date: '12/20 (六)',
-    location: '大阪落地囉',
+    location: '大阪/京都',
     weather: { temp: '8°C', condition: 'cloudy' },
     events: [
       {
@@ -75,7 +75,7 @@ const itineraryData = [
   {
     day: 2,
     date: '12/21 (日)',
-    location: '京都神社日',
+    location: '京都',
     weather: { temp: '6°C', condition: 'sunny' },
     events: [
       {
@@ -192,7 +192,7 @@ const itineraryData = [
         title: 'ENEN 燒肉',
         subtitle: '晚餐',
         tips: '必點: 手毬肉壽司 (需預約)',
-        highlight: '已預約位置(不能遲到)',
+        highlight: '預約確認中',
         coords: 'https://maps.app.goo.gl/wKZtZ6Vfz6KTLAFU9'
       }
     ]
@@ -435,7 +435,7 @@ const itineraryData = [
         subtitle: '光影藝術展',
         highlight: '預約 17:00 - 17:30 進場',
         notes: '抵達京都站後前往會場 (通常為東寺或特定展場，請確認票券地點)。',
-        coords: 'teamLab Biovortex Kyoto'
+        coords: 'Toji Temple'
       }
     ]
   },
@@ -541,6 +541,7 @@ const itineraryData = [
         highlight: '營業時間短: 11:00-14:00',
         coords: 'MooKEN Osaka'
       },
+      // --- 新增行程: 綱敷天神社御旅社 ---
       {
         type: 'attraction',
         time: '13:00',
@@ -551,6 +552,7 @@ const itineraryData = [
         notes: '就在 NU 茶屋町附近，參拜後可步行至梅田藍天大廈。',
         coords: 'Tsunashiki Tenjinsha Otabisha'
       },
+      // ---
       {
         type: 'attraction',
         time: '15:00',
@@ -623,17 +625,65 @@ const itineraryData = [
 
 // --- COMPONENTS ---
 
-const WeatherWidget = ({ weather }) => {
-  const Icon = weather.condition === 'sunny' ? Sun : CloudRain;
+// Real-time Weather Widget (using Open-Meteo API)
+const LiveWeatherWidget = () => {
+  const [weather, setWeather] = useState(null);
+  const [loading, setLoading] = useState(true);
+  
+  // Coordinates for Osaka
+  const LAT = 34.6937;
+  const LON = 135.5023;
+
+  useEffect(() => {
+    const fetchWeather = async () => {
+      try {
+        const response = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}&current_weather=true`);
+        const data = await response.json();
+        setWeather(data.current_weather);
+      } catch (error) {
+        console.error("Weather fetch failed", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchWeather();
+    // Update every 30 mins
+    const interval = setInterval(fetchWeather, 1800000);
+    return () => clearInterval(interval);
+  }, []);
+
+  if (loading) return <div className="flex items-center gap-1 text-white/80 text-xs"><Loader2 size={12} className="animate-spin"/> 載入氣象...</div>;
+  if (!weather) return null;
+
+  // Determine icon based on weather code
+  const code = weather.weathercode;
+  let Icon = Sun;
+  let label = "晴朗";
+  
+  if (code > 0 && code <= 3) { Icon = CloudSun; label = "多雲"; }
+  else if (code > 3 && code < 70) { Icon = CloudRain; label = "有雨"; }
+  else if (code >= 70) { Icon = Snowflake; label = "降雪"; }
+
   return (
-    <div className="absolute top-4 right-4 bg-white/30 backdrop-blur-md px-3 py-1.5 rounded-full shadow-sm flex items-center gap-2 text-white text-sm font-medium z-10 border border-white/20">
-      <Icon size={16} className="text-white drop-shadow-md" />
-      <span className="drop-shadow-md">{weather.temp}</span>
+    <div className="bg-white/20 backdrop-blur-sm px-3 py-1.5 rounded-full flex items-center gap-2 text-white text-xs font-bold border border-white/10 shadow-sm">
+      <Icon size={14} className="text-yellow-300 drop-shadow-sm" />
+      <span>大阪現在 {Math.round(weather.temperature)}°C</span>
     </div>
   );
 };
 
-// Modified NavButton to check if coords is a URL
+// Static Weather Label (for future dates)
+const EstimatedWeatherLabel = ({ weather }) => {
+  const Icon = weather.condition === 'sunny' ? Sun : CloudRain;
+  return (
+    <div className="flex items-center gap-1.5 text-slate-400 text-xs bg-slate-100 px-2 py-1 rounded-md">
+      <Icon size={12} className={weather.condition === 'sunny' ? 'text-orange-400' : 'text-blue-400'} />
+      <span>{weather.temp} (12月均溫)</span>
+    </div>
+  );
+};
+
 const NavButton = ({ coords }) => {
   const isUrl = coords.startsWith('http');
   const href = isUrl ? coords : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(coords)}`;
@@ -701,13 +751,22 @@ const EventCard = ({ event }) => {
         </div>
       )}
       
-      {/* 支援 HTML 解析，讓超連結與地圖圖片生效 */}
+      {/* 支援 HTML 解析 */}
       {event.notes && (
         <div className="text-slate-400 text-xs mb-2 leading-relaxed" dangerouslySetInnerHTML={{ __html: event.notes }} />
       )}
 
-      {/* 導航按鈕：如果不是純資訊卡片 (type='info') 則顯示 */}
-      {event.type !== 'info' && <NavButton coords={event.coords} />}
+      {/* Special handling for map image */}
+      {event.type === 'info' && event.title.includes('地圖') ? (
+        <div className="mt-3">
+          <p className="text-sm font-bold text-cyan-700 mb-2">園區配置參考：</p>
+          <div className="w-full bg-slate-100 rounded-lg flex items-center justify-center h-32 text-slate-400 text-xs">
+             (點擊上方連結開啟地圖)
+          </div>
+        </div>
+      ) : (
+        event.type !== 'info' && <NavButton coords={event.coords} />
+      )}
     </div>
   );
 };
@@ -716,29 +775,18 @@ const EventCard = ({ event }) => {
 const ToolsSection = ({ currentDay }) => {
   const [amount, setAmount] = useState('');
   const [item, setItem] = useState('');
-  // Initialize expenseDay with currentDay passed from props
   const [expenseDay, setExpenseDay] = useState(currentDay);
   const [expenses, setExpenses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isOffline, setIsOffline] = useState(false);
   const [user, setUser] = useState(null);
 
-  // Sync expenseDay when currentDay prop changes
-  useEffect(() => {
-    setExpenseDay(currentDay);
-  }, [currentDay]);
+  useEffect(() => { setExpenseDay(currentDay); }, [currentDay]);
 
-  // Auth & Sync Logic
   useEffect(() => {
     let unsubscribeFirestore = () => {};
-
     const init = async () => {
-      // 1. Check if Firebase Auth is viable
-      if (!auth) {
-        enableOfflineMode();
-        return;
-      }
-
+      if (!auth) { enableOfflineMode(); return; }
       try {
         if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
            await signInWithCustomToken(auth, __initial_auth_token);
@@ -746,17 +794,14 @@ const ToolsSection = ({ currentDay }) => {
            await signInAnonymously(auth);
         }
       } catch (e) {
-        console.error("Auth failed, switching to offline mode:", e);
+        console.error("Auth failed", e);
         enableOfflineMode();
-        return; // Stop further auth attempts
+        return;
       }
-
-      // If Auth success, setup listener
-      const unsubscribeAuth = onAuthStateChanged(auth, (currentUser) => {
+      onAuthStateChanged(auth, (currentUser) => {
         if (currentUser) {
           setUser(currentUser);
           setIsOffline(false);
-          // Sync with Firestore
           if (db) {
              const userExpensesRef = collection(db, 'artifacts', appId, 'users', currentUser.uid, 'expenses');
              const q = query(userExpensesRef, orderBy("timestamp", "desc"));
@@ -764,97 +809,56 @@ const ToolsSection = ({ currentDay }) => {
                const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                setExpenses(data);
                setLoading(false);
-             }, (err) => {
-               console.error("Firestore error, fallback offline", err);
-               enableOfflineMode();
-             });
+             }, () => enableOfflineMode());
           }
-        } else {
-          // Should not happen if signIn was successful, but handle safe
-          // enableOfflineMode(); 
         }
       });
     };
-
     init();
-
-    return () => {
-      unsubscribeFirestore();
-    };
+    return () => unsubscribeFirestore();
   }, []);
 
   const enableOfflineMode = () => {
     setIsOffline(true);
     setLoading(false);
-    // Load from LocalStorage
     const localData = localStorage.getItem('local_expenses');
-    if (localData) {
-      setExpenses(JSON.parse(localData));
-    }
+    if (localData) setExpenses(JSON.parse(localData));
   };
 
   const handleAddExpense = async (e) => {
     e.preventDefault();
     if (!item || !amount) return;
-
-    const newExpense = {
-      item,
-      amount: Number(amount),
-      day: Number(expenseDay), // Save selected day
-      timestamp: Date.now(),
-      dateStr: new Date().toISOString()
-    };
+    const newExpense = { item, amount: Number(amount), day: Number(expenseDay), timestamp: Date.now() };
 
     if (isOffline) {
-      // OFFLINE: Save to LocalStorage
-      const updatedExpenses = [ { ...newExpense, id: 'local_' + Date.now() }, ...expenses];
-      setExpenses(updatedExpenses);
-      localStorage.setItem('local_expenses', JSON.stringify(updatedExpenses));
-      setItem('');
-      setAmount('');
+      const updated = [ { ...newExpense, id: 'local_' + Date.now() }, ...expenses];
+      setExpenses(updated);
+      localStorage.setItem('local_expenses', JSON.stringify(updated));
     } else {
-      // ONLINE: Save to Firestore
       try {
-        const userExpensesRef = collection(db, 'artifacts', appId, 'users', user.uid, 'expenses');
-        await addDoc(userExpensesRef, {
-            ...newExpense,
-            uid: user.uid,
-            timestamp: Timestamp.now()
-        });
-        setItem('');
-        setAmount('');
+        await addDoc(collection(db, 'artifacts', appId, 'users', user.uid, 'expenses'), { ...newExpense, uid: user.uid, timestamp: Timestamp.now() });
       } catch (error) {
-        alert("雲端儲存失敗，切換至離線模式");
         enableOfflineMode();
-        // Retry locally
-        const updatedExpenses = [ { ...newExpense, id: 'local_' + Date.now() }, ...expenses];
-        setExpenses(updatedExpenses);
-        localStorage.setItem('local_expenses', JSON.stringify(updatedExpenses));
       }
     }
+    setItem(''); setAmount('');
   };
 
   const handleDelete = async (id) => {
-      if(confirm('確定刪除此筆紀錄?')) {
-          if (isOffline) {
-             const updated = expenses.filter(ex => ex.id !== id);
-             setExpenses(updated);
-             localStorage.setItem('local_expenses', JSON.stringify(updated));
-          } else {
-             try {
-                const docRef = doc(db, 'artifacts', appId, 'users', user.uid, 'expenses', id);
-                await deleteDoc(docRef);
-             } catch(e) {
-                console.error("Delete failed", e);
-                alert("刪除失敗");
-             }
-          }
+      if(!confirm('確定刪除?')) return;
+      if (isOffline) {
+         const updated = expenses.filter(ex => ex.id !== id);
+         setExpenses(updated);
+         localStorage.setItem('local_expenses', JSON.stringify(updated));
+      } else {
+         try {
+            await deleteDoc(doc(db, 'artifacts', appId, 'users', user.uid, 'expenses', id));
+         } catch(e) { console.error(e); }
       }
   }
 
-  // Group expenses by day
   const expensesByDay = expenses.reduce((acc, ex) => {
-    const d = ex.day || 1; // Default to Day 1 if undefined
+    const d = ex.day || 1;
     if (!acc[d]) acc[d] = [];
     acc[d].push(ex);
     return acc;
@@ -873,7 +877,7 @@ const ToolsSection = ({ currentDay }) => {
         {isOffline ? (
              <div className="mb-4 p-3 bg-amber-50 text-amber-700 text-xs rounded-lg border border-amber-200 flex items-center gap-2">
                  <WifiOff size={16} />
-                 <span><strong>離線模式</strong>：資料將儲存於此裝置，未同步雲端。</span>
+                 <span><strong>離線模式</strong>：資料僅存在此裝置。</span>
              </div>
         ) : (
              <div className="mb-4 px-2 text-xs text-emerald-600 flex items-center gap-1">
@@ -882,62 +886,32 @@ const ToolsSection = ({ currentDay }) => {
              </div>
         )}
 
-        {/* Expense Form */}
         <form onSubmit={handleAddExpense} className="flex flex-col gap-2 mb-6">
-            {/* Day Selector */}
             <div className="relative">
-              <select 
-                value={expenseDay} 
-                onChange={(e) => setExpenseDay(Number(e.target.value))}
-                className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-rose-400 appearance-none text-slate-700 font-medium"
-              >
-                {itineraryData.map(d => (
-                  <option key={d.day} value={d.day}>
-                    Day {d.day} - {d.date}
-                  </option>
-                ))}
+              <select value={expenseDay} onChange={(e) => setExpenseDay(Number(e.target.value))} className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-rose-400 appearance-none text-slate-700 font-medium">
+                {itineraryData.map(d => <option key={d.day} value={d.day}>Day {d.day} - {d.date}</option>)}
               </select>
               <ChevronDown size={16} className="absolute right-3 top-3 text-slate-400 pointer-events-none"/>
             </div>
-
             <div className="flex gap-2">
-              <input 
-                  type="text" 
-                  placeholder="項目 (如: 章魚燒)" 
-                  className="flex-1 bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-rose-400"
-                  value={item}
-                  onChange={(e) => setItem(e.target.value)}
-              />
-              <input 
-                  type="number" 
-                  placeholder="¥ 金額" 
-                  className="w-24 bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-rose-400"
-                  value={amount}
-                  onChange={(e) => setAmount(e.target.value)}
-              />
+              <input type="text" placeholder="項目" className="flex-1 bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-rose-400" value={item} onChange={(e) => setItem(e.target.value)}/>
+              <input type="number" placeholder="¥" className="w-24 bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-rose-400" value={amount} onChange={(e) => setAmount(e.target.value)}/>
               <button type="submit" className="bg-rose-500 text-white rounded-lg px-3 py-2 font-bold shadow-lg shadow-rose-200 active:scale-95 transition-transform">+</button>
             </div>
         </form>
 
-        {/* Expense List Grouped by Day */}
         <div className="space-y-4 mb-4 max-h-80 overflow-y-auto pr-1">
-            {loading ? (
-                <p className="text-center text-slate-400 text-sm">載入中...</p>
-            ) : Object.keys(expensesByDay).length === 0 ? (
-                <p className="text-center text-slate-300 text-sm py-4">還沒有記帳紀錄</p>
-            ) : (
+            {loading ? <p className="text-center text-slate-400 text-sm">載入中...</p> : Object.keys(expensesByDay).length === 0 ? <p className="text-center text-slate-300 text-sm py-4">還沒有記帳紀錄</p> : 
                 Object.keys(expensesByDay).sort((a, b) => b - a).map(dayKey => {
                     const dayExpenses = expensesByDay[dayKey];
                     const dayTotal = dayExpenses.reduce((sum, ex) => sum + ex.amount, 0);
-                    // Find date string from itinerary data
                     const dayInfo = itineraryData.find(d => d.day === Number(dayKey));
                     const dateLabel = dayInfo ? dayInfo.date : '未分類日期';
-
                     return (
                         <div key={dayKey} className="bg-slate-50 rounded-lg p-3">
                             <div className="flex justify-between items-center mb-2 pb-2 border-b border-slate-200/60">
                                 <span className="text-xs font-bold text-slate-500 bg-slate-200 px-2 py-0.5 rounded">Day {dayKey} • {dateLabel}</span>
-                                <span className="text-xs font-bold text-slate-400">小計: ¥{dayTotal.toLocaleString()}</span>
+                                <span className="text-xs font-bold text-slate-400">¥{dayTotal.toLocaleString()}</span>
                             </div>
                             <div className="space-y-2">
                                 {dayExpenses.map(ex => (
@@ -953,9 +927,8 @@ const ToolsSection = ({ currentDay }) => {
                         </div>
                     );
                 })
-            )}
+            }
         </div>
-
         <div className="bg-slate-800 text-white rounded-xl p-4 flex justify-between items-center shadow-lg shadow-slate-200">
             <span className="text-sm text-slate-300">旅程總花費</span>
             <span className="text-xl font-bold">¥ {total.toLocaleString()}</span>
@@ -969,42 +942,25 @@ const ToolsSection = ({ currentDay }) => {
 const InfoSection = () => {
   return (
     <div className="pb-24 px-4 pt-6 max-w-md mx-auto">
-      
-      {/* 住宿資訊 */}
       <div className="bg-white rounded-xl shadow-sm border-l-4 border-rose-400 p-5 mb-4">
-        <h3 className="text-lg font-bold text-slate-800 mb-3 flex items-center gap-2">
-          <Bed size={20} className="text-rose-500" />
-          住宿資訊
-        </h3>
-        
+        <h3 className="text-lg font-bold text-slate-800 mb-3 flex items-center gap-2"><Bed size={20} className="text-rose-500" />住宿資訊</h3>
         <div className="mb-4">
           <p className="font-bold text-slate-700 text-sm">京都: Rihga Gran Kyoto</p>
           <p className="text-xs text-slate-500 mb-2">〒601-8003 京都府京都市南区 東九条西山王町1</p>
           <NavButton coords="Rihga Gran Kyoto" />
         </div>
-        
         <div className="border-t border-slate-100 pt-3">
           <p className="font-bold text-slate-700 text-sm">大阪: PG 黑門公寓酒店</p>
           <p className="text-xs text-slate-500 mb-2">〒542-0072 大阪市中央区 高津 3-3-22</p>
           <NavButton coords="PG Kuromon Apartment" />
         </div>
       </div>
-
-      {/* 必備清單 */}
       <div className="bg-white rounded-xl shadow-sm border-l-4 border-rose-400 p-5">
-        <h3 className="text-lg font-bold text-slate-800 mb-3 flex items-center gap-2">
-          <CheckSquare size={20} className="text-rose-500" />
-          必備清單
-        </h3>
+        <h3 className="text-lg font-bold text-slate-800 mb-3 flex items-center gap-2"><CheckSquare size={20} className="text-rose-500" />必備清單</h3>
         <ul className="text-sm text-slate-600 space-y-2 list-none">
-          <li>□ 環保筷 + 碗 (吃泡麵用)</li>
-          <li>□ 洗衣球 (民宿可以洗衣服)</li>
-          <li>□ ESIM / 網卡</li>
-          <li>□ 暖暖包 (12月很冷)</li>
-          <li>□ 牙刷 (有些環保飯店不提供)</li>
+          <li>□ 環保筷 + 碗 (吃泡麵用)</li><li>□ 洗衣球 (民宿可以洗衣服)</li><li>□ ESIM / 網卡</li><li>□ 暖暖包 (12月很冷)</li><li>□ 牙刷 (有些環保飯店不提供)</li>
         </ul>
       </div>
-
     </div>
   );
 };
@@ -1024,27 +980,20 @@ const App = () => {
             <h1 className="text-2xl font-black tracking-tight">關西補遺憾之旅</h1>
             <p className="text-xs opacity-90 font-medium">12/20 (六) - 12/28 (日) • 9天8夜</p>
           </div>
-          <button 
-            onClick={() => setActiveTab('info')}
-            className={`flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-bold transition-all ${activeTab === 'info' ? 'bg-slate-800 text-white' : 'bg-white/20 text-white hover:bg-white/30'}`}
-          >
-            <Info size={14} /> 資訊
-          </button>
+          {/* Live Weather Widget in Header */}
+          <div className="flex flex-col items-end gap-1">
+             <LiveWeatherWidget />
+             <button onClick={() => setActiveTab('info')} className={`flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold transition-all ${activeTab === 'info' ? 'bg-slate-800 text-white' : 'bg-white/20 text-white hover:bg-white/30'}`}>
+               <Info size={14} /> 資訊
+             </button>
+          </div>
         </div>
 
         {/* Day Selector - White Pills */}
         {activeTab === 'itinerary' && (
           <div className="flex overflow-x-auto gap-2 pb-1 scrollbar-hide -mx-2 px-2">
             {itineraryData.map((d) => (
-              <button
-                key={d.day}
-                onClick={() => setSelectedDay(d.day)}
-                className={`flex-shrink-0 px-4 py-1.5 rounded-full text-xs font-bold transition-all duration-200 ${
-                  selectedDay === d.day 
-                    ? 'bg-white text-rose-500 shadow-md transform scale-105' 
-                    : 'bg-white/30 text-white hover:bg-white/50'
-                }`}
-              >
+              <button key={d.day} onClick={() => setSelectedDay(d.day)} className={`flex-shrink-0 px-4 py-1.5 rounded-full text-xs font-bold transition-all duration-200 ${selectedDay === d.day ? 'bg-white text-rose-500 shadow-md transform scale-105' : 'bg-white/30 text-white hover:bg-white/50'}`}>
                 D{d.day} {d.location.split('/')[0]}
               </button>
             ))}
@@ -1058,22 +1007,15 @@ const App = () => {
           <div className="px-5 animate-fade-in">
             {/* Day Header */}
             <div className="mb-4 flex justify-between items-center">
-              <h2 className="text-lg font-bold text-slate-700 border-l-4 border-rose-400 pl-3">
-                {currentDayData.date} 行程
-              </h2>
-              <div className="bg-white px-3 py-1 rounded-full shadow-sm flex items-center gap-2 text-slate-500 text-xs font-bold border border-slate-100">
-                {currentDayData.weather.condition === 'sunny' ? <Sun size={14} className="text-orange-400"/> : <CloudRain size={14} className="text-blue-400"/>}
-                {currentDayData.weather.temp}
-              </div>
+              <h2 className="text-lg font-bold text-slate-700 border-l-4 border-rose-400 pl-3">{currentDayData.date} 行程</h2>
+              <EstimatedWeatherLabel weather={currentDayData.weather} />
             </div>
-
             {/* Timeline Events */}
             <div className="space-y-4">
               {currentDayData.events.map((event, index) => (
                 <EventCard key={index} event={event} />
               ))}
             </div>
-
             <div className="h-12"/>
           </div>
         ) : activeTab === 'tools' ? (
@@ -1085,32 +1027,20 @@ const App = () => {
 
       {/* Floating Bottom Nav */}
       <nav className="fixed bottom-6 left-1/2 -translate-x-1/2 bg-white/90 backdrop-blur-md text-slate-400 px-6 py-3 rounded-full shadow-xl border border-slate-100 flex items-center gap-8 z-50">
-        <button 
-          onClick={() => setActiveTab('itinerary')} 
-          className={`flex flex-col items-center gap-0.5 transition-colors ${activeTab === 'itinerary' ? 'text-rose-500' : 'hover:text-slate-600'}`}
-        >
+        <button onClick={() => setActiveTab('itinerary')} className={`flex flex-col items-center gap-0.5 transition-colors ${activeTab === 'itinerary' ? 'text-rose-500' : 'hover:text-slate-600'}`}>
           <Calendar size={22} strokeWidth={activeTab === 'itinerary' ? 2.5 : 2} />
           <span className="text-[10px] font-bold">行程</span>
         </button>
         <div className="w-px h-6 bg-slate-200"></div>
-        <button 
-          onClick={() => setActiveTab('tools')} 
-          className={`flex flex-col items-center gap-0.5 transition-colors ${activeTab === 'tools' ? 'text-rose-500' : 'hover:text-slate-600'}`}
-        >
+        <button onClick={() => setActiveTab('tools')} className={`flex flex-col items-center gap-0.5 transition-colors ${activeTab === 'tools' ? 'text-rose-500' : 'hover:text-slate-600'}`}>
           <CreditCard size={22} strokeWidth={activeTab === 'tools' ? 2.5 : 2} />
           <span className="text-[10px] font-bold">記帳</span>
         </button>
       </nav>
 
-      <style>{`
-        .scrollbar-hide::-webkit-scrollbar { display: none; }
-        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
-      `}</style>
+      <style>{` .scrollbar-hide::-webkit-scrollbar { display: none; } .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; } `}</style>
     </div>
   );
 };
 
 export default App;
-
-
-

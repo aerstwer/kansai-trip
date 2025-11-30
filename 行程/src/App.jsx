@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { MapPin, Calendar, Utensils, Train, Sun, CloudRain, Info, Phone, CreditCard, Plane, Bed, Map, ExternalLink, Trash, WifiOff } from 'lucide-react';
+import { MapPin, Calendar, Utensils, Train, Sun, CloudRain, Info, Phone, CreditCard, Plane, Bed, Map, ExternalLink, Trash, WifiOff, Clock, Camera, ChevronDown, CheckSquare } from 'lucide-react';
 import { initializeApp } from 'firebase/app';
 import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, deleteDoc, doc, Timestamp } from 'firebase/firestore';
 import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from 'firebase/auth';
@@ -27,7 +27,7 @@ try {
   console.warn("Firebase init warning:", e);
 }
 
-// --- DATA: 行程資料庫 ---
+// --- DATA: 完整行程資料庫 ---
 const itineraryData = [
   {
     day: 1,
@@ -39,7 +39,7 @@ const itineraryData = [
         type: 'transport',
         time: '19:10',
         title: '抵達關西機場 (KIX)',
-        subtitle: '航班: 高雄 15:25 → 大阪 19:10',
+        subtitle: '航班: 高雄 15:25 → 19:10',
         notes: '入境後上2樓過空橋，找「綠色/白色」售票機領 HARUKA 車票。',
         highlight: '重要: HARUKA 車票',
         coords: 'Kansai International Airport'
@@ -78,7 +78,6 @@ const itineraryData = [
     location: '京都',
     weather: { temp: '6°C', condition: 'sunny' },
     events: [
-      // --- 新增：購票建議 ---
       {
         type: 'info',
         time: '購票建議',
@@ -88,7 +87,6 @@ const itineraryData = [
         tips: '今日行程巴士趟數多，買這張券不僅划算，還能省去每次投零錢的麻煩！(注意：不包含去貴船的叡山電車)',
         coords: 'Kyoto Station Bus Terminal'
       },
-      // ---
       {
         type: 'transport',
         time: '08:00',
@@ -113,7 +111,7 @@ const itineraryData = [
         subtitle: '巴士 (東西向移動)201 203 205 ',
         tips: '若是搭市巴士，一定要注意「後門上、前門下」的搭車規則（前門下車刷卡／付費）',
         notes: '搭乘巴士前往「河源町今出川」站。',
-        coords: 'https://www.google.com/maps/dir/%E6%99%B4%E6%98%8E%E7%A5%9E%E7%A4%BE806+Seimeicho,+Kamigyo+Ward,+Kyoto,+602-8222%E6%97%A5%E6%9C%AC/%E6%97%A5%E6%9C%AC%E4%BA%AC%E9%83%BD%E5%BA%9C%E4%BA%AC%E9%83%BD%E5%B8%82%E5%B7%A6%E4%BA%AC%E5%8D%80+Shimogamo+Izumikawacho,+%EF%BC%95%EF%BC%99+%E8%B3%80%E8%8C%82%E5%BE%A1%E7%A5%96%E7%A5%9E%E7%A4%BE(%E4%B8%8B%E9%B4%A8%E7%A5%9E%E7%A4%BE)/@35.0244931,135.7609271,14.75z/data=!4m15!4m14!1m5!1m1!1s0x600107df798f7951:0xf28aea911a6811d0!2m2!1d135.7511802!2d35.02776!1m5!1m1!1s0x6001084046fc8d7f:0x3b83b327fe5cdcc!2m2!1d135.7730068!2d35.0389778!3e3!5i1?authuser=0&entry=ttu&g_ep=EgoyMDI1MTEyMy4xIKXMDSoASAFQAw%3D%3D'
+        coords: 'Shimogamo Shrine'
       },
       {
         type: 'attraction',
@@ -193,9 +191,7 @@ const itineraryData = [
         time: '20:30',
         title: 'ENEN 燒肉',
         subtitle: '晚餐',
-        tips: '必點: 手毬肉壽司 (需預約)',
-        highlight: '預約確認中',
-        // --- 這裡已經修改為您的 Google Maps 連結 ---
+        tips: '必點: 手毬肉壽司 (需預約)',,
         coords: 'https://maps.app.goo.gl/wKZtZ6Vfz6KTLAFU9'
       }
     ]
@@ -546,6 +542,16 @@ const itineraryData = [
       },
       {
         type: 'attraction',
+        time: '13:00',
+        title: '綱敷天神社 御旅社',
+        subtitle: '梅田茶屋町',
+        highlight: '新增景點',
+        tips: '位在梅田鬧區的神社，適合散步。祈求學業進步。',
+        notes: '就在 NU 茶屋町附近，參拜後可步行至梅田藍天大廈。',
+        coords: 'Tsunashiki Tenjinsha Otabisha'
+      },
+      {
+        type: 'attraction',
         time: '15:00',
         title: '展望台二選一',
         subtitle: '梅田藍天大廈 / 阿倍野 Harukas',
@@ -577,18 +583,6 @@ const itineraryData = [
         tips: '必拍: 獅子殿 (據說能吸走厄運，招來好運)',
         coords: 'Namba Yasaka Shrine'
       },
-            // --- 新增行程: 綱敷天神社御旅社 ---
-      {
-        type: 'attraction',
-        time: '13:00',
-        title: '綱敷天神社 御旅社',
-        subtitle: '梅田茶屋町',
-        highlight: '新增景點',
-        tips: '位在梅田鬧區的神社，適合散步。祈求學業進步。',
-        notes: '就在 NU 茶屋町附近，參拜後可步行至梅田藍天大廈。',
-        coords: 'Tsunashiki Tenjinsha Otabisha'
-      },
-      // ---
       {
         type: 'food',
         time: '18:00',
@@ -631,9 +625,9 @@ const itineraryData = [
 const WeatherWidget = ({ weather }) => {
   const Icon = weather.condition === 'sunny' ? Sun : CloudRain;
   return (
-    <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm p-2 rounded-xl shadow-sm flex items-center gap-2 text-slate-600 text-sm font-medium z-10">
-      <Icon size={16} className={weather.condition === 'sunny' ? 'text-orange-400' : 'text-blue-400'} />
-      <span>{weather.temp}</span>
+    <div className="absolute top-4 right-4 bg-white/30 backdrop-blur-md px-3 py-1.5 rounded-full shadow-sm flex items-center gap-2 text-white text-sm font-medium z-10 border border-white/20">
+      <Icon size={16} className="text-white drop-shadow-md" />
+      <span className="drop-shadow-md">{weather.temp}</span>
     </div>
   );
 };
@@ -718,13 +712,20 @@ const EventCard = ({ event }) => {
 };
 
 // --- TOOLS SECTION WITH OFFLINE SUPPORT ---
-const ToolsSection = () => {
+const ToolsSection = ({ currentDay }) => {
   const [amount, setAmount] = useState('');
   const [item, setItem] = useState('');
+  // Initialize expenseDay with currentDay passed from props
+  const [expenseDay, setExpenseDay] = useState(currentDay);
   const [expenses, setExpenses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isOffline, setIsOffline] = useState(false);
   const [user, setUser] = useState(null);
+
+  // Sync expenseDay when currentDay prop changes
+  useEffect(() => {
+    setExpenseDay(currentDay);
+  }, [currentDay]);
 
   // Auth & Sync Logic
   useEffect(() => {
@@ -798,7 +799,8 @@ const ToolsSection = () => {
     const newExpense = {
       item,
       amount: Number(amount),
-      timestamp: Date.now(), // Use timestamp number for both
+      day: Number(expenseDay), // Save selected day
+      timestamp: Date.now(),
       dateStr: new Date().toISOString()
     };
 
@@ -849,29 +851,21 @@ const ToolsSection = () => {
       }
   }
 
+  // Group expenses by day
+  const expensesByDay = expenses.reduce((acc, ex) => {
+    const d = ex.day || 1; // Default to Day 1 if undefined
+    if (!acc[d]) acc[d] = [];
+    acc[d].push(ex);
+    return acc;
+  }, {});
+
   const total = expenses.reduce((acc, curr) => acc + curr.amount, 0);
 
   return (
-    <div className="pb-24 px-4 pt-6">
-      {/* Info Cards */}
-      <div className="grid grid-cols-2 gap-3 mb-6">
-        <div className="bg-white p-4 rounded-xl shadow-sm border border-slate-100">
-            <div className="text-indigo-500 mb-2"><Plane size={24}/></div>
-            <div className="text-xs text-slate-400">回程航班</div>
-            <div className="font-bold text-slate-700">IT 285</div>
-            <div className="text-sm">20:10 KIX</div>
-        </div>
-        <div className="bg-white p-4 rounded-xl shadow-sm border border-slate-100">
-            <div className="text-rose-500 mb-2"><Phone size={24}/></div>
-            <div className="text-xs text-slate-400">緊急聯絡</div>
-            <div className="font-bold text-slate-700">119 / 110</div>
-            <div className="text-sm">旅外急難救助</div>
-        </div>
-      </div>
-
-      <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-5">
-        <h3 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
-            <CreditCard size={20} className="text-emerald-500"/>
+    <div className="pb-24 px-4 pt-6 max-w-md mx-auto">
+      <div className="bg-white rounded-3xl shadow-sm border border-slate-100 p-6">
+        <h3 className="text-xl font-bold text-slate-800 mb-6 flex items-center gap-2">
+            <div className="bg-rose-100 p-2 rounded-full text-rose-600"><CreditCard size={20}/></div>
             旅費記帳本
         </h3>
         
@@ -887,39 +881,82 @@ const ToolsSection = () => {
              </div>
         )}
 
-        <form onSubmit={handleAddExpense} className="flex gap-2 mb-6">
-            <input 
-                type="text" 
-                placeholder="項目 (如: 章魚燒)" 
-                className="flex-1 bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-emerald-400"
-                value={item}
-                onChange={(e) => setItem(e.target.value)}
-            />
-            <input 
-                type="number" 
-                placeholder="¥ 金額" 
-                className="w-24 bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-emerald-400"
-                value={amount}
-                onChange={(e) => setAmount(e.target.value)}
-            />
-            <button type="submit" className="bg-emerald-500 text-white rounded-lg px-3 py-2 font-bold">+</button>
+        {/* Expense Form */}
+        <form onSubmit={handleAddExpense} className="flex flex-col gap-2 mb-6">
+            {/* Day Selector */}
+            <div className="relative">
+              <select 
+                value={expenseDay} 
+                onChange={(e) => setExpenseDay(Number(e.target.value))}
+                className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-rose-400 appearance-none text-slate-700 font-medium"
+              >
+                {itineraryData.map(d => (
+                  <option key={d.day} value={d.day}>
+                    Day {d.day} - {d.date}
+                  </option>
+                ))}
+              </select>
+              <ChevronDown size={16} className="absolute right-3 top-3 text-slate-400 pointer-events-none"/>
+            </div>
+
+            <div className="flex gap-2">
+              <input 
+                  type="text" 
+                  placeholder="項目 (如: 章魚燒)" 
+                  className="flex-1 bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-rose-400"
+                  value={item}
+                  onChange={(e) => setItem(e.target.value)}
+              />
+              <input 
+                  type="number" 
+                  placeholder="¥ 金額" 
+                  className="w-24 bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-rose-400"
+                  value={amount}
+                  onChange={(e) => setAmount(e.target.value)}
+              />
+              <button type="submit" className="bg-rose-500 text-white rounded-lg px-3 py-2 font-bold shadow-lg shadow-rose-200 active:scale-95 transition-transform">+</button>
+            </div>
         </form>
 
-        <div className="space-y-3 mb-4 max-h-60 overflow-y-auto">
-            {loading ? <p className="text-center text-slate-400 text-sm">載入中...</p> : expenses.map(ex => (
-                <div key={ex.id} className="flex justify-between items-center border-b border-slate-50 pb-2">
-                    <span className="text-slate-600 font-medium">{ex.item}</span>
-                    <div className="flex items-center gap-3">
-                        <span className="text-slate-800 font-bold">¥{ex.amount.toLocaleString()}</span>
-                        <button onClick={() => handleDelete(ex.id)} className="text-slate-300 hover:text-red-400"><Trash size={14}/></button>
-                    </div>
-                </div>
-            ))}
-            {expenses.length === 0 && !loading && <p className="text-center text-slate-300 text-sm py-4">還沒有記帳紀錄</p>}
+        {/* Expense List Grouped by Day */}
+        <div className="space-y-4 mb-4 max-h-80 overflow-y-auto pr-1">
+            {loading ? (
+                <p className="text-center text-slate-400 text-sm">載入中...</p>
+            ) : Object.keys(expensesByDay).length === 0 ? (
+                <p className="text-center text-slate-300 text-sm py-4">還沒有記帳紀錄</p>
+            ) : (
+                Object.keys(expensesByDay).sort((a, b) => b - a).map(dayKey => {
+                    const dayExpenses = expensesByDay[dayKey];
+                    const dayTotal = dayExpenses.reduce((sum, ex) => sum + ex.amount, 0);
+                    // Find date string from itinerary data
+                    const dayInfo = itineraryData.find(d => d.day === Number(dayKey));
+                    const dateLabel = dayInfo ? dayInfo.date : '未分類日期';
+
+                    return (
+                        <div key={dayKey} className="bg-slate-50 rounded-lg p-3">
+                            <div className="flex justify-between items-center mb-2 pb-2 border-b border-slate-200/60">
+                                <span className="text-xs font-bold text-slate-500 bg-slate-200 px-2 py-0.5 rounded">Day {dayKey} • {dateLabel}</span>
+                                <span className="text-xs font-bold text-slate-400">小計: ¥{dayTotal.toLocaleString()}</span>
+                            </div>
+                            <div className="space-y-2">
+                                {dayExpenses.map(ex => (
+                                    <div key={ex.id} className="flex justify-between items-center">
+                                        <span className="text-slate-700 text-sm">{ex.item}</span>
+                                        <div className="flex items-center gap-3">
+                                            <span className="text-slate-800 font-bold text-sm">¥{ex.amount.toLocaleString()}</span>
+                                            <button onClick={() => handleDelete(ex.id)} className="text-slate-300 hover:text-red-400"><Trash size={12}/></button>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    );
+                })
+            )}
         </div>
 
-        <div className="bg-slate-800 text-white rounded-xl p-4 flex justify-between items-center">
-            <span className="text-sm text-slate-300">目前總花費</span>
+        <div className="bg-slate-800 text-white rounded-xl p-4 flex justify-between items-center shadow-lg shadow-slate-200">
+            <span className="text-sm text-slate-300">旅程總花費</span>
             <span className="text-xl font-bold">¥ {total.toLocaleString()}</span>
         </div>
       </div>
@@ -927,43 +964,87 @@ const ToolsSection = () => {
   );
 };
 
+// --- INFO SECTION ---
+const InfoSection = () => {
+  return (
+    <div className="pb-24 px-4 pt-6 max-w-md mx-auto">
+      
+      {/* 住宿資訊 */}
+      <div className="bg-white rounded-xl shadow-sm border-l-4 border-rose-400 p-5 mb-4">
+        <h3 className="text-lg font-bold text-slate-800 mb-3 flex items-center gap-2">
+          <Bed size={20} className="text-rose-500" />
+          住宿資訊
+        </h3>
+        
+        <div className="mb-4">
+          <p className="font-bold text-slate-700 text-sm">京都: Rihga Gran Kyoto</p>
+          <p className="text-xs text-slate-500 mb-2">〒601-8003 京都府京都市南区 東九条西山王町1</p>
+          <NavButton coords="Rihga Gran Kyoto" />
+        </div>
+        
+        <div className="border-t border-slate-100 pt-3">
+          <p className="font-bold text-slate-700 text-sm">大阪: PG 黑門公寓酒店</p>
+          <p className="text-xs text-slate-500 mb-2">〒542-0072 大阪市中央区 高津 3-3-22</p>
+          <NavButton coords="PG Kuromon Apartment" />
+        </div>
+      </div>
+
+      {/* 必備清單 */}
+      <div className="bg-white rounded-xl shadow-sm border-l-4 border-rose-400 p-5">
+        <h3 className="text-lg font-bold text-slate-800 mb-3 flex items-center gap-2">
+          <CheckSquare size={20} className="text-rose-500" />
+          必備清單
+        </h3>
+        <ul className="text-sm text-slate-600 space-y-2 list-none">
+          <li>□ 環保筷 + 碗 (吃泡麵用)</li>
+          <li>□ 洗衣球 (民宿可以洗衣服)</li>
+          <li>□ ESIM / 網卡</li>
+          <li>□ 暖暖包 (12月很冷)</li>
+          <li>□ 牙刷 (有些環保飯店不提供)</li>
+        </ul>
+      </div>
+
+    </div>
+  );
+};
+
 // --- MAIN APP ---
 const App = () => {
-  const [activeTab, setActiveTab] = useState('itinerary'); // itinerary | tools
+  const [activeTab, setActiveTab] = useState('itinerary');
   const [selectedDay, setSelectedDay] = useState(1);
-
   const currentDayData = itineraryData.find(d => d.day === selectedDay);
 
   return (
-    <div className="min-h-screen bg-[#FDFBF7] font-sans text-slate-800 pb-20">
-      
-      {/* Header */}
-      <header className="sticky top-0 bg-[#FDFBF7]/95 backdrop-blur-md z-50 px-4 pt-4 pb-2 border-b border-slate-100">
-        <div className="flex justify-between items-center mb-4">
+    <div className="min-h-screen bg-[#F2F1F6] font-sans text-slate-800 pb-24">
+      {/* Header - Pink Theme */}
+      <header className="sticky top-0 bg-rose-400 text-white z-50 px-5 pt-8 pb-4 shadow-md rounded-b-3xl">
+        <div className="flex justify-between items-end mb-4">
           <div>
-            <h1 className="text-xl font-bold text-slate-800 tracking-tight">Kansai Travel Mate</h1>
-            <p className="text-xs text-slate-400 tracking-widest">KYOTO • OSAKA • NAGOYA</p>
+            <h1 className="text-2xl font-black tracking-tight">關西補遺憾之旅</h1>
+            <p className="text-xs opacity-90 font-medium">12/20 (六) - 12/28 (日) • 9天8夜</p>
           </div>
-          <div className="bg-slate-100 rounded-full w-8 h-8 flex items-center justify-center">
-             <span className="text-xs font-bold text-slate-500">JP</span>
-          </div>
+          <button 
+            onClick={() => setActiveTab('info')}
+            className={`flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-bold transition-all ${activeTab === 'info' ? 'bg-slate-800 text-white' : 'bg-white/20 text-white hover:bg-white/30'}`}
+          >
+            <Info size={14} /> 資訊
+          </button>
         </div>
 
-        {/* Day Selector (Horizontal Scroll) */}
+        {/* Day Selector - White Pills */}
         {activeTab === 'itinerary' && (
-          <div className="flex overflow-x-auto gap-3 pb-2 scrollbar-hide -mx-4 px-4">
+          <div className="flex overflow-x-auto gap-2 pb-1 scrollbar-hide -mx-2 px-2">
             {itineraryData.map((d) => (
               <button
                 key={d.day}
                 onClick={() => setSelectedDay(d.day)}
-                className={`flex-shrink-0 flex flex-col items-center justify-center w-14 h-16 rounded-2xl transition-all duration-300 ${
+                className={`flex-shrink-0 px-4 py-1.5 rounded-full text-xs font-bold transition-all duration-200 ${
                   selectedDay === d.day 
-                    ? 'bg-slate-800 text-white shadow-lg shadow-slate-200' 
-                    : 'bg-white text-slate-400 border border-slate-100'
+                    ? 'bg-white text-rose-500 shadow-md transform scale-105' 
+                    : 'bg-white/30 text-white hover:bg-white/50'
                 }`}
               >
-                <span className="text-[10px] font-bold opacity-60">DAY {d.day}</span>
-                <span className="text-sm font-bold">{d.date.split(' ')[0]}</span>
+                D{d.day} {d.location.split('/')[0]}
               </button>
             ))}
           </div>
@@ -971,14 +1052,18 @@ const App = () => {
       </header>
 
       {/* Main Content */}
-      <main className="max-w-md mx-auto">
+      <main className="max-w-md mx-auto pt-6">
         {activeTab === 'itinerary' ? (
-          <div className="px-4 py-6 animate-fade-in">
+          <div className="px-5 animate-fade-in">
             {/* Day Header */}
-            <div className="mb-6 relative">
-              <h2 className="text-2xl font-bold text-slate-800 mb-1">{currentDayData.location}</h2>
-              <p className="text-slate-400 text-sm">{currentDayData.date}</p>
-              <WeatherWidget weather={currentDayData.weather} />
+            <div className="mb-4 flex justify-between items-center">
+              <h2 className="text-lg font-bold text-slate-700 border-l-4 border-rose-400 pl-3">
+                {currentDayData.date} 行程
+              </h2>
+              <div className="bg-white px-3 py-1 rounded-full shadow-sm flex items-center gap-2 text-slate-500 text-xs font-bold border border-slate-100">
+                {currentDayData.weather.condition === 'sunny' ? <Sun size={14} className="text-orange-400"/> : <CloudRain size={14} className="text-blue-400"/>}
+                {currentDayData.weather.temp}
+              </div>
             </div>
 
             {/* Timeline Events */}
@@ -988,58 +1073,40 @@ const App = () => {
               ))}
             </div>
 
-            {/* End of Day Note */}
-            <div className="mt-8 text-center">
-              <span className="text-slate-300 text-xs tracking-widest uppercase">End of Day {selectedDay}</span>
-            </div>
+            <div className="h-12"/>
           </div>
+        ) : activeTab === 'tools' ? (
+          <ToolsSection currentDay={selectedDay} />
         ) : (
-          <ToolsSection />
+          <InfoSection />
         )}
       </main>
 
-      {/* Bottom Navigation */}
-      <nav className="fixed bottom-0 left-0 w-full bg-white border-t border-slate-100 py-3 px-6 flex justify-around items-center z-50 safe-area-bottom">
+      {/* Floating Bottom Nav */}
+      <nav className="fixed bottom-6 left-1/2 -translate-x-1/2 bg-white/90 backdrop-blur-md text-slate-400 px-6 py-3 rounded-full shadow-xl border border-slate-100 flex items-center gap-8 z-50">
         <button 
-          onClick={() => setActiveTab('itinerary')}
-          className={`flex flex-col items-center gap-1 ${activeTab === 'itinerary' ? 'text-slate-800' : 'text-slate-300'}`}
+          onClick={() => setActiveTab('itinerary')} 
+          className={`flex flex-col items-center gap-0.5 transition-colors ${activeTab === 'itinerary' ? 'text-rose-500' : 'hover:text-slate-600'}`}
         >
-          <Calendar size={24} strokeWidth={activeTab === 'itinerary' ? 2.5 : 2} />
-          <span className="text-[10px] font-medium">行程</span>
+          <Calendar size={22} strokeWidth={activeTab === 'itinerary' ? 2.5 : 2} />
+          <span className="text-[10px] font-bold">行程</span>
         </button>
-        
+        <div className="w-px h-6 bg-slate-200"></div>
         <button 
-          className="bg-emerald-500 text-white p-3 rounded-full -mt-8 shadow-lg shadow-emerald-200"
-          onClick={() => window.open('https://www.google.com/maps', '_blank')}
+          onClick={() => setActiveTab('tools')} 
+          className={`flex flex-col items-center gap-0.5 transition-colors ${activeTab === 'tools' ? 'text-rose-500' : 'hover:text-slate-600'}`}
         >
-          <Map size={24} />
-        </button>
-
-        <button 
-          onClick={() => setActiveTab('tools')}
-          className={`flex flex-col items-center gap-1 ${activeTab === 'tools' ? 'text-slate-800' : 'text-slate-300'}`}
-        >
-          <Info size={24} strokeWidth={activeTab === 'tools' ? 2.5 : 2} />
-          <span className="text-[10px] font-medium">工具 & 記帳</span>
+          <CreditCard size={22} strokeWidth={activeTab === 'tools' ? 2.5 : 2} />
+          <span className="text-[10px] font-bold">記帳</span>
         </button>
       </nav>
 
-      {/* Global Style overrides for scrollbar hiding */}
       <style>{`
-        .scrollbar-hide::-webkit-scrollbar {
-            display: none;
-        }
-        .scrollbar-hide {
-            -ms-overflow-style: none;
-            scrollbar-width: none;
-        }
-        .safe-area-bottom {
-            padding-bottom: env(safe-area-inset-bottom);
-        }
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
       `}</style>
     </div>
   );
 };
-
 
 export default App;

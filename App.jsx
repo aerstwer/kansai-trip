@@ -195,7 +195,8 @@ const itineraryData = [
         subtitle: '晚餐',
         tips: '必點: 手毬肉壽司 (需預約)',
         highlight: '預約確認中',
-        coords: 'Yakiniku ENEN Kyoto'
+        // --- 這裡已經修改為您的 Google Maps 連結 ---
+        coords: 'https://maps.app.goo.gl/wKZtZ6Vfz6KTLAFU9'
       }
     ]
   },

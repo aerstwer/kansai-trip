@@ -32,7 +32,7 @@ const itineraryData = [
   {
     day: 1,
     date: '12/20 (六)',
-    location: '大阪/京都',
+    location: '大阪落地囉',
     weather: { temp: '8°C', condition: 'cloudy' },
     events: [
       {
@@ -75,7 +75,7 @@ const itineraryData = [
   {
     day: 2,
     date: '12/21 (日)',
-    location: '京都',
+    location: '京都神社日',
     weather: { temp: '6°C', condition: 'sunny' },
     events: [
       {
@@ -1111,4 +1111,5 @@ const App = () => {
 };
 
 export default App;
+
 

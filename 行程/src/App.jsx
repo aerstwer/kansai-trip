@@ -435,7 +435,7 @@ const itineraryData = [
         subtitle: '光影藝術展',
         highlight: '預約 17:00 - 17:30 進場',
         notes: '抵達京都站後前往會場 (通常為東寺或特定展場，請確認票券地點)。',
-        coords: 'Toji Temple'
+        coords: 'teamLab Biovortex Kyoto'
       }
     ]
   },
@@ -1111,5 +1111,6 @@ const App = () => {
 };
 
 export default App;
+
 
 

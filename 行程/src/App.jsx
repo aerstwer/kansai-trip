@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { MapPin, Calendar, Utensils, Train, Sun, CloudRain, Info, Phone, CreditCard, Plane, Bed, Map, ExternalLink, Trash, WifiOff, Clock, Camera, ChevronDown, CheckSquare, Cloud, CloudSun, Snowflake, Loader2 } from 'lucide-react';
+import { MapPin, Calendar, Utensils, Train, Sun, CloudRain, Info, Phone, CreditCard, Plane, Bed, Map, ExternalLink, Trash, WifiOff, Clock, Camera, ChevronDown, CheckSquare, Cloud, CloudSun, Snowflake, Loader2, Wallet } from 'lucide-react';
 import { initializeApp } from 'firebase/app';
 import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, deleteDoc, doc, Timestamp } from 'firebase/firestore';
 import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from 'firebase/auth';
@@ -16,6 +16,9 @@ const firebaseConfig = {
 };
 
 const appId = typeof __app_id !== 'undefined' ? __app_id : 'kansai-travel-mate';
+// --- APP ID SANITIZATION ---
+const sanitizedAppId = appId.replace(/[/\.]/g, '_');
+
 
 // Initialize Firebase
 let db, auth;
@@ -33,13 +36,14 @@ const itineraryData = [
     day: 1,
     date: '12/20 (六)',
     location: '大阪/京都',
+    cityCode: 'kyoto',
     weather: { temp: '8°C', condition: 'cloudy' },
     events: [
       {
         type: 'transport',
         time: '19:10',
-        title: '抵達關西機場 (KIX)',
-        subtitle: '航班: 高雄 15:25 → 19:10',
+        title: '抵達關西機場',
+        subtitle: 'KIX T1',
         notes: '入境後上2樓過空橋，找「綠色/白色」售票機領 HARUKA 車票。',
         highlight: '重要: HARUKA 車票',
         coords: 'Kansai International Airport'
@@ -47,8 +51,8 @@ const itineraryData = [
       {
         type: 'transport',
         time: '20:00',
-        title: 'Haruka 特急 → 京都',
-        subtitle: '約 80 分鐘車程',
+        title: 'Haruka 特急',
+        subtitle: '往京都 (80分)',
         notes: '直達京都車站，免轉車。',
         coords: 'Kyoto Station'
       },
@@ -58,16 +62,14 @@ const itineraryData = [
         title: 'Rihga Gran Kyoto',
         subtitle: 'Check-in',
         notes: '京都站八條口步行 4 分鐘。',
-        highlight: '住宿',
         coords: 'Rihga Gran Kyoto'
       },
       {
         type: 'food',
         time: '22:00',
-        title: '深夜拉麵二選一',
-        subtitle: '本家第一旭 / 新福菜館',
+        title: '深夜拉麵',
+        subtitle: '第一旭 / 新福菜館',
         notes: '就在飯店附近，第一旭開到凌晨2點。',
-        tips: '必吃: 第一旭醬油拉麵 (排隊名店)',
         coords: 'Honke Daiichi-Asahi'
       }
     ]
@@ -76,15 +78,15 @@ const itineraryData = [
     day: 2,
     date: '12/21 (日)',
     location: '京都',
+    cityCode: 'kyoto',
     weather: { temp: '6°C', condition: 'sunny' },
     events: [
       {
         type: 'info',
-        time: '購票建議',
-        title: '推薦購買：地鐵・巴士一日券',
-        subtitle: '售價 ¥1,100',
-        highlight: '今日預估車資 ¥1,150 (省¥50)',
-        tips: '今日行程巴士趟數多，買這張券不僅划算，還能省去每次投零錢的麻煩！(注意：不包含去貴船的叡山電車)',
+        time: '必買',
+        title: '地鐵巴士一日券',
+        subtitle: '省錢攻略',
+        tips: '今日車資預估 ¥1,150，買券省 ¥50 且方便！',
         coords: 'Kyoto Station Bus Terminal'
       },
       {
@@ -192,7 +194,7 @@ const itineraryData = [
         title: 'ENEN 燒肉',
         subtitle: '晚餐',
         tips: '必點: 手毬肉壽司 (需預約)',
-        highlight: '預約確認中',
+        highlight: '已預約',
         coords: 'https://maps.app.goo.gl/wKZtZ6Vfz6KTLAFU9'
       }
     ]
@@ -201,6 +203,7 @@ const itineraryData = [
     day: 3,
     date: '12/22 (一)',
     location: '名古屋',
+    cityCode: 'nagoya',
     weather: { temp: '9°C', condition: 'cloudy' },
     events: [
       {
@@ -280,6 +283,7 @@ const itineraryData = [
     day: 4,
     date: '12/23 (二)',
     location: '天橋立',
+    cityCode: 'amanohashidate',
     weather: { temp: '5°C', condition: 'rain' },
     events: [
       {
@@ -370,6 +374,7 @@ const itineraryData = [
     day: 5,
     date: '12/24 (三)',
     location: '宇治',
+    cityCode: 'kyoto',
     weather: { temp: '7°C', condition: 'cloudy' },
     events: [
       {
@@ -443,86 +448,53 @@ const itineraryData = [
     day: 6,
     date: '12/25 (四)',
     location: '勝尾寺/姬路',
+    cityCode: 'himeji',
     weather: { temp: '8°C', condition: 'sunny' },
     events: [
       {
         type: 'transport',
         time: '08:30',
-        title: '前往新大阪 (寄放行李)',
-        subtitle: 'JR難波/大阪 → 新大阪',
-        notes: '先將行李寄放在新大阪站，再轉御堂筋線直達「箕面萱野站」 (約30分)。',
+        title: '移動日',
+        subtitle: '寄放行李',
+        notes: 'JR難波 → 新大阪(寄行李) → 箕面萱野站。',
         coords: 'Shin-Osaka Station'
-      },
-      {
-        type: 'transport',
-        time: '09:30',
-        title: '箕面萱野站 → 勝尾寺',
-        subtitle: '轉搭阪急巴士 29 號',
-        notes: '車站出站後轉乘巴士。若 4 人同行可改搭計程車 (約 ¥3,200)。',
-        coords: 'Minoh-Kayano Station'
       },
       {
         type: 'attraction',
         time: '10:00',
-        title: '勝尾寺 (達摩寺)',
-        subtitle: '祈求勝運',
-        tips: '建議停留 1.5 小時，山上天氣較涼記得帶外套！到處都是達摩超好拍。',
+        title: '勝尾寺',
+        subtitle: '達摩滿山',
+        tips: '從箕面萱野搭巴士29號或計程車。',
         coords: 'Katsuo-ji'
       },
       {
         type: 'transport',
-        time: '11:30',
-        title: '返回箕面萱野站',
-        subtitle: '巴士或計程車下山',
-        coords: 'Minoh-Kayano Station'
-      },
-      {
-        type: 'transport',
-        time: '12:00',
-        title: '前往新大阪站',
-        subtitle: '御堂筋線',
-        notes: '回到新大阪站，準備轉搭新幹線。',
-        coords: 'Shin-Osaka Station'
-      },
-      {
-        type: 'transport',
         time: '13:00',
-        title: '新大阪 → 姬路',
-        subtitle: '山陽新幹線 (自由席)',
-        highlight: 'JR Pass 適用',
-        notes: '車程約 30 分鐘，可搭 Hikari 或 Kodama 號。',
+        title: '前往姬路',
+        subtitle: '新幹線',
         coords: 'Himeji Station'
       },
       {
         type: 'attraction',
         time: '13:45',
-        title: '姬路城 (世界遺產)',
+        title: '姬路城',
         subtitle: '白鷺城',
-        tips: '入場費 ¥1,000。建議參觀主天守、西之丸庭園。',
+        tips: '世界遺產，參觀約2小時。',
         coords: 'Himeji Castle'
-      },
-      {
-        type: 'food',
-        time: '16:00',
-        title: '姬路站前晚餐',
-        subtitle: '自由覓食',
-        notes: '商店街或車站附近用餐。',
-        coords: 'Himeji Station'
       },
       {
         type: 'transport',
         time: '17:00',
-        title: '返回大阪 (難波)',
-        subtitle: '姬路 → 新大阪 → 難波',
-        notes: '搭新幹線回新大阪，取回行李後轉御堂筋線至難波/心齋橋回飯店。',
+        title: '前往大阪難波',
+        subtitle: '姬路→新大阪→難波',
         coords: 'Namba Station'
       },
       {
         type: 'hotel',
         time: '19:00',
-        title: 'PG 黑門公寓酒店',
-        subtitle: '自由活動',
-        notes: '回飯店休息或至心齋橋逛街。',
+        title: 'PG 黑門公寓',
+        subtitle: 'Check-in',
+        notes: '位於黑門市場附近。',
         coords: 'PG Kuromon Apartment'
       }
     ]
@@ -531,34 +503,30 @@ const itineraryData = [
     day: 7,
     date: '12/26 (五)',
     location: '大阪市區',
+    cityCode: 'osaka',
     weather: { temp: '10°C', condition: 'cloudy' },
     events: [
       {
         type: 'food',
         time: '11:00',
-        title: 'MooKEN 脆皮泡芙',
-        subtitle: '甜點時間',
-        highlight: '營業時間短: 11:00-14:00',
+        title: 'MooKEN',
+        subtitle: '脆皮泡芙',
+        tips: '只開到 14:00',
         coords: 'MooKEN Osaka'
       },
-      // --- 新增行程: 綱敷天神社御旅社 ---
       {
         type: 'attraction',
         time: '13:00',
-        title: '綱敷天神社 御旅社',
-        subtitle: '梅田茶屋町',
-        highlight: '新增景點',
-        tips: '位在梅田鬧區的神社，適合散步。祈求學業進步。',
-        notes: '就在 NU 茶屋町附近，參拜後可步行至梅田藍天大廈。',
+        title: '綱敷天神社',
+        subtitle: '御旅社',
+        notes: '梅田茶屋町散步。',
         coords: 'Tsunashiki Tenjinsha Otabisha'
       },
-      // ---
       {
         type: 'attraction',
         time: '15:00',
-        title: '展望台二選一',
-        subtitle: '梅田藍天大廈 / 阿倍野 Harukas',
-        notes: '梅田空中庭園 15:00 前入場可能有優惠(視周遊卡規定)。',
+        title: '空中庭園',
+        subtitle: '梅田展望台',
         coords: 'Umeda Sky Building'
       },
       {
@@ -566,7 +534,7 @@ const itineraryData = [
         time: '20:00',
         title: 'A5 肉十八番',
         subtitle: '燒肉晚餐',
-        highlight: '預約: 20:00',
+        highlight: '已預約',
         tips: '攻略: A5和牛吃到飽，請空腹前往!',
         coords: 'Yakiniku Nikuhachi'
       }
@@ -576,22 +544,22 @@ const itineraryData = [
     day: 8,
     date: '12/27 (六)',
     location: '大阪自由',
+    cityCode: 'osaka',
     weather: { temp: '9°C', condition: 'sunny' },
     events: [
       {
         type: 'attraction',
         time: '10:00',
         title: '難波八阪神社',
-        subtitle: '巨大獅子頭',
-        tips: '必拍: 獅子殿 (據說能吸走厄運，招來好運)',
+        subtitle: '大獅子頭',
+        tips: '吸走厄運！',
         coords: 'Namba Yasaka Shrine'
       },
       {
         type: 'food',
         time: '18:00',
-        title: '大阪燒 / 自由晚餐',
-        subtitle: 'Hirokazuya 或 力丸燒肉',
-        notes: '最後一晚，盡情享受大阪美食。',
+        title: '自由晚餐',
+        subtitle: '大阪燒/燒肉',
         coords: 'Dotonbori'
       }
     ]
@@ -600,6 +568,7 @@ const itineraryData = [
     day: 9,
     date: '12/28 (日)',
     location: '返程',
+    cityCode: 'osaka',
     weather: { temp: '10°C', condition: 'cloudy' },
     events: [
       {
@@ -626,18 +595,26 @@ const itineraryData = [
 // --- COMPONENTS ---
 
 // Real-time Weather Widget (using Open-Meteo API)
-const LiveWeatherWidget = () => {
+const LiveWeatherWidget = ({ cityCode }) => {
   const [weather, setWeather] = useState(null);
   const [loading, setLoading] = useState(true);
   
-  // Coordinates for Osaka
-  const LAT = 34.6937;
-  const LON = 135.5023;
+  // 座標設定
+  const locations = {
+    osaka: { lat: 34.6937, lon: 135.5023, name: '大阪' },
+    kyoto: { lat: 35.0116, lon: 135.7681, name: '京都' },
+    nagoya: { lat: 35.1815, lon: 136.9066, name: '名古屋' },
+    amanohashidate: { lat: 35.5701, lon: 135.1912, name: '天橋立' },
+    himeji: { lat: 34.8151, lon: 134.6853, name: '姬路' },
+  };
+
+  const target = locations[cityCode] || locations['osaka'];
 
   useEffect(() => {
+    setLoading(true);
     const fetchWeather = async () => {
       try {
-        const response = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}&current_weather=true`);
+        const response = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${target.lat}&longitude=${target.lon}&current_weather=true`);
         const data = await response.json();
         setWeather(data.current_weather);
       } catch (error) {
@@ -648,26 +625,23 @@ const LiveWeatherWidget = () => {
     };
     
     fetchWeather();
-    // Update every 30 mins
     const interval = setInterval(fetchWeather, 1800000);
     return () => clearInterval(interval);
-  }, []);
+  }, [cityCode]);
 
-  if (loading) return <div className="flex items-center gap-1 text-slate-400 text-xs"><Loader2 size={12} className="animate-spin"/> 載入氣象...</div>;
+  if (loading) return <div className="flex items-center gap-1 text-slate-400 text-xs"><Loader2 size={12} className="animate-spin"/> {target.name}氣象..</div>;
   if (!weather) return null;
 
-  // Determine icon based on weather code
   const code = weather.weathercode;
   let Icon = Sun;
-  
   if (code > 0 && code <= 3) { Icon = CloudSun; }
   else if (code > 3 && code < 70) { Icon = CloudRain; }
   else if (code >= 70) { Icon = Snowflake; }
 
   return (
-    <div className="bg-slate-800 px-3 py-1.5 rounded-full flex items-center gap-2 text-slate-100 text-xs font-bold border border-slate-700 shadow-sm">
+    <div className="bg-slate-800/80 px-3 py-1.5 rounded-full flex items-center gap-2 text-slate-100 text-xs font-bold border border-slate-700/50 backdrop-blur-sm transition-all duration-500">
       <Icon size={14} className="text-yellow-300" />
-      <span>大阪現在 {Math.round(weather.temperature)}°C</span>
+      <span>{target.name} 現在 {Math.round(weather.temperature)}°C</span>
     </div>
   );
 };
@@ -683,7 +657,8 @@ const EstimatedWeatherLabel = ({ weather }) => {
   );
 };
 
-const NavButton = ({ coords }) => {
+// Static NavButton for Info Section
+const InfoNavButton = ({ coords }) => {
   const isUrl = coords.startsWith('http');
   const href = isUrl ? coords : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(coords)}`;
   
@@ -692,14 +667,15 @@ const NavButton = ({ coords }) => {
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      className="mt-3 flex items-center justify-center w-full py-2.5 bg-slate-800 text-slate-200 rounded-lg text-sm font-bold hover:bg-slate-700 transition-colors gap-2 border border-slate-700"
+      className="flex items-center justify-center w-full py-3 bg-slate-700 text-slate-200 rounded-xl text-sm font-bold hover:bg-slate-600 transition-colors gap-2 border border-slate-600 mt-2"
     >
-      <ExternalLink size={14} className="text-emerald-400" />
+      <Map size={16} className="text-emerald-400" />
       導航 Go
     </a>
   );
 };
 
+// Enhanced Event Card (Vertical List Style)
 const EventCard = ({ event }) => {
   const getIcon = () => {
     switch(event.type) {
@@ -721,38 +697,55 @@ const EventCard = ({ event }) => {
     }
   };
 
+  const NavButton = () => {
+    const isUrl = event.coords.startsWith('http');
+    const href = isUrl ? event.coords : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(event.coords)}`;
+    
+    return (
+      <a 
+        href={href}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="mt-4 flex items-center justify-center w-full py-2.5 bg-slate-800 text-slate-200 rounded-lg text-sm font-bold hover:bg-slate-700 transition-colors gap-2 border border-slate-700 shadow-sm"
+      >
+        {isUrl ? <ExternalLink size={14} className="text-blue-300"/> : <Map size={14} className="text-emerald-400"/>}
+        導航 Go
+      </a>
+    );
+  };
+
   return (
-    <div className={`bg-slate-900 rounded-xl p-4 shadow-lg mb-4 border-l-4 ${getBorderColor()} relative overflow-hidden border-t border-r border-b border-slate-800`}>
+    <div className={`bg-slate-900 rounded-xl p-5 shadow-lg mb-4 border-l-4 ${getBorderColor()} relative overflow-hidden border-t border-r border-b border-slate-800`}>
       <div className="flex justify-between items-start mb-2">
         <div className="flex items-center gap-2">
-          <div className="bg-slate-800 p-1.5 rounded-full border border-slate-700">
+          <div className="bg-slate-800 p-2 rounded-full border border-slate-700 shadow-inner">
             {getIcon()}
           </div>
-          <span className="text-xs font-bold text-slate-400 bg-slate-800 px-2 py-0.5 rounded border border-slate-700">
+          <span className="text-sm font-bold text-slate-300 bg-slate-800 px-3 py-1 rounded-full border border-slate-700 shadow-sm">
             {event.time}
           </span>
         </div>
       </div>
       
-      <h3 className="text-lg font-bold text-slate-100 mb-1">{event.title}</h3>
-      <p className="text-slate-400 text-sm mb-2">{event.subtitle}</p>
+      <h3 className="text-xl font-bold text-slate-100 mb-1 tracking-tight">{event.title}</h3>
+      <p className="text-slate-400 text-sm mb-3 font-medium">{event.subtitle}</p>
       
       {event.highlight && (
-        <div className="inline-block bg-rose-950/50 text-rose-200 text-xs font-bold px-2 py-1 rounded mb-2 border border-rose-900/50">
+        <div className="inline-block bg-rose-950/60 text-rose-200 text-xs font-bold px-3 py-1 rounded-md mb-3 border border-rose-900/50">
           {event.highlight}
         </div>
       )}
       
       {event.tips && (
-        <div className="bg-amber-950/30 p-3 rounded-lg text-amber-200 text-xs leading-relaxed mb-2 border border-amber-900/50">
-          <span className="font-bold block mb-1 text-amber-400">💡 導遊筆記：</span>
+        <div className="bg-amber-950/30 p-3 rounded-lg text-amber-200 text-sm leading-relaxed mb-3 border border-amber-900/50">
+          <span className="font-bold block mb-1 text-amber-400 text-xs uppercase tracking-wider">💡 導遊筆記</span>
           <div dangerouslySetInnerHTML={{ __html: event.tips }} />
         </div>
       )}
       
       {/* 支援 HTML 解析，讓超連結與地圖圖片生效 */}
       {event.notes && (
-        <div className="text-slate-400 text-xs mb-2 leading-relaxed" dangerouslySetInnerHTML={{ __html: event.notes }} />
+        <div className="text-slate-400 text-sm mb-2 leading-relaxed" dangerouslySetInnerHTML={{ __html: event.notes }} />
       )}
 
       {/* Special handling for map image */}
@@ -764,13 +757,13 @@ const EventCard = ({ event }) => {
           </div>
         </div>
       ) : (
-        event.type !== 'info' && <NavButton coords={event.coords} />
+        event.type !== 'info' && <NavButton />
       )}
     </div>
   );
 };
 
-// --- TOOLS SECTION WITH OFFLINE SUPPORT ---
+// --- TOOLS SECTION ---
 const ToolsSection = ({ currentDay }) => {
   const [amount, setAmount] = useState('');
   const [item, setItem] = useState('');
@@ -788,7 +781,12 @@ const ToolsSection = ({ currentDay }) => {
       if (!auth) { enableOfflineMode(); return; }
       try {
         if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-           await signInWithCustomToken(auth, __initial_auth_token);
+           try {
+             await signInWithCustomToken(auth, __initial_auth_token);
+           } catch (tokenError) {
+             console.warn("Custom token failed, fallback to anon", tokenError);
+             await signInAnonymously(auth);
+           }
         } else {
            await signInAnonymously(auth);
         }
@@ -802,7 +800,7 @@ const ToolsSection = ({ currentDay }) => {
           setUser(currentUser);
           setIsOffline(false);
           if (db) {
-             const userExpensesRef = collection(db, 'artifacts', appId, 'users', currentUser.uid, 'expenses');
+             const userExpensesRef = collection(db, 'artifacts', sanitizedAppId, 'users', currentUser.uid, 'expenses');
              const q = query(userExpensesRef, orderBy("timestamp", "desc"));
              unsubscribeFirestore = onSnapshot(q, (snapshot) => {
                const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
@@ -835,7 +833,7 @@ const ToolsSection = ({ currentDay }) => {
       localStorage.setItem('local_expenses', JSON.stringify(updated));
     } else {
       try {
-        await addDoc(collection(db, 'artifacts', appId, 'users', user.uid, 'expenses'), { ...newExpense, uid: user.uid, timestamp: Timestamp.now() });
+        await addDoc(collection(db, 'artifacts', sanitizedAppId, 'users', user.uid, 'expenses'), { ...newExpense, uid: user.uid, timestamp: Timestamp.now() });
       } catch (error) {
         enableOfflineMode();
       }
@@ -851,7 +849,7 @@ const ToolsSection = ({ currentDay }) => {
          localStorage.setItem('local_expenses', JSON.stringify(updated));
       } else {
          try {
-            await deleteDoc(doc(db, 'artifacts', appId, 'users', user.uid, 'expenses', id));
+            await deleteDoc(doc(db, 'artifacts', sanitizedAppId, 'users', user.uid, 'expenses', id));
          } catch(e) { console.error(e); }
       }
   }
@@ -866,24 +864,14 @@ const ToolsSection = ({ currentDay }) => {
   const total = expenses.reduce((acc, curr) => acc + curr.amount, 0);
 
   return (
-    <div className="pb-24 px-4 pt-6 max-w-md mx-auto">
-      <div className="bg-slate-900 rounded-3xl shadow-lg border border-slate-800 p-6">
+    <div className="pb-24 px-4 pt-6 w-full">
+      <div className="bg-slate-900 rounded-3xl shadow-lg border border-slate-800 p-6 w-full">
         <h3 className="text-xl font-bold text-slate-100 mb-6 flex items-center gap-2">
-            <div className="bg-slate-800 p-2 rounded-full text-emerald-400 border border-slate-700"><CreditCard size={20}/></div>
+            <div className="bg-slate-800 p-2 rounded-full text-emerald-400 border border-slate-700"><Wallet size={20}/></div>
             旅費記帳本
         </h3>
         
-        {isOffline ? (
-             <div className="mb-4 p-3 bg-amber-950/30 text-amber-400 text-xs rounded-lg border border-amber-900/50 flex items-center gap-2">
-                 <WifiOff size={16} />
-                 <span><strong>離線模式</strong>：資料僅存在此裝置。</span>
-             </div>
-        ) : (
-             <div className="mb-4 px-2 text-xs text-emerald-400 flex items-center gap-1">
-                 <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
-                 雲端同步中
-             </div>
-        )}
+        {isOffline ? <div className="mb-4 p-3 bg-amber-950/30 text-amber-400 text-xs rounded-lg border border-amber-900/50 flex items-center gap-2"><WifiOff size={16}/> 離線模式</div> : <div className="mb-4 px-2 text-xs text-emerald-400 flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>雲端同步中</div>}
 
         <form onSubmit={handleAddExpense} className="flex flex-col gap-2 mb-6">
             <div className="relative">
@@ -899,13 +887,13 @@ const ToolsSection = ({ currentDay }) => {
             </div>
         </form>
 
-        <div className="space-y-4 mb-4 max-h-80 overflow-y-auto pr-1">
+        <div className="space-y-4 mb-4 max-h-[50vh] overflow-y-auto pr-1 custom-scrollbar">
             {loading ? <p className="text-center text-slate-500 text-sm">載入中...</p> : Object.keys(expensesByDay).length === 0 ? <p className="text-center text-slate-500 text-sm py-4">還沒有記帳紀錄</p> : 
                 Object.keys(expensesByDay).sort((a, b) => b - a).map(dayKey => {
                     const dayExpenses = expensesByDay[dayKey];
                     const dayTotal = dayExpenses.reduce((sum, ex) => sum + ex.amount, 0);
                     const dayInfo = itineraryData.find(d => d.day === Number(dayKey));
-                    const dateLabel = dayInfo ? dayInfo.date : '未分類日期';
+                    const dateLabel = dayInfo ? dayInfo.date : '未分類';
                     return (
                         <div key={dayKey} className="bg-slate-800/50 rounded-lg p-3 border border-slate-800">
                             <div className="flex justify-between items-center mb-2 pb-2 border-b border-slate-700">
@@ -915,10 +903,10 @@ const ToolsSection = ({ currentDay }) => {
                             <div className="space-y-2">
                                 {dayExpenses.map(ex => (
                                     <div key={ex.id} className="flex justify-between items-center">
-                                        <span className="text-slate-300 text-sm">{ex.item}</span>
-                                        <div className="flex items-center gap-3">
+                                        <span className="text-slate-300 text-sm truncate pr-2">{ex.item}</span>
+                                        <div className="flex items-center gap-3 shrink-0">
                                             <span className="text-slate-100 font-bold text-sm">¥{ex.amount.toLocaleString()}</span>
-                                            <button onClick={() => handleDelete(ex.id)} className="text-slate-500 hover:text-red-400"><Trash size={12}/></button>
+                                            <button onClick={() => handleDelete(ex.id)} className="text-slate-500 hover:text-red-400 transition-colors"><Trash size={12}/></button>
                                         </div>
                                     </div>
                                 ))}
@@ -940,24 +928,26 @@ const ToolsSection = ({ currentDay }) => {
 // --- INFO SECTION ---
 const InfoSection = () => {
   return (
-    <div className="pb-24 px-4 pt-6 max-w-md mx-auto">
-      <div className="bg-slate-900 rounded-xl shadow-lg border-l-4 border-rose-500 p-5 mb-4 border-t border-r border-b border-slate-800">
-        <h3 className="text-lg font-bold text-slate-100 mb-3 flex items-center gap-2"><Bed size={20} className="text-rose-500" />住宿資訊</h3>
-        <div className="mb-4">
-          <p className="font-bold text-slate-200 text-sm">京都: Rihga Gran Kyoto</p>
-          <p className="text-xs text-slate-400 mb-2">〒601-8003 京都府京都市南区 東九条西山王町1</p>
-          <NavButton coords="Rihga Gran Kyoto" />
-        </div>
-        <div className="border-t border-slate-800 pt-3">
-          <p className="font-bold text-slate-200 text-sm">大阪: PG 黑門公寓酒店</p>
-          <p className="text-xs text-slate-400 mb-2">〒542-0072 大阪市中央区 高津 3-3-22</p>
-          <NavButton coords="PG Kuromon Apartment" />
+    <div className="pb-24 px-4 pt-6 w-full space-y-4">
+      <div className="bg-slate-900 rounded-xl shadow-lg p-5 border border-slate-800">
+        <h3 className="text-lg font-bold text-slate-100 mb-4 flex items-center gap-2 border-b border-slate-800 pb-3"><Bed size={18} className="text-purple-400" />住宿資訊</h3>
+        <div className="space-y-6">
+          <div>
+            <p className="font-bold text-slate-200 text-sm mb-1">京都: Rihga Gran Kyoto</p>
+            <p className="text-xs text-slate-500">〒601-8003 京都府京都市南区 東九条西山王町1</p>
+            <InfoNavButton coords="Rihga Gran Kyoto" />
+          </div>
+          <div className="border-t border-slate-800 pt-4">
+            <p className="font-bold text-slate-200 text-sm mb-1">大阪: PG 黑門公寓酒店</p>
+            <p className="text-xs text-slate-500">〒542-0072 大阪市中央区 高津 3-3-22</p>
+            <InfoNavButton coords="PG Kuromon Apartment" />
+          </div>
         </div>
       </div>
-      <div className="bg-slate-900 rounded-xl shadow-lg border-l-4 border-rose-500 p-5 border-t border-r border-b border-slate-800">
-        <h3 className="text-lg font-bold text-slate-100 mb-3 flex items-center gap-2"><CheckSquare size={20} className="text-rose-500" />必備清單</h3>
-        <ul className="text-sm text-slate-400 space-y-2 list-none">
-          <li>□ 環保筷 + 碗 (吃泡麵用)</li><li>□ 洗衣球 (民宿可以洗衣服)</li><li>□ ESIM / 網卡</li><li>□ 暖暖包 (12月很冷)</li><li>□ 牙刷 (有些環保飯店不提供)</li>
+      <div className="bg-slate-900 rounded-xl shadow-lg p-5 border border-slate-800">
+        <h3 className="text-lg font-bold text-slate-100 mb-4 flex items-center gap-2 border-b border-slate-800 pb-3"><CheckSquare size={18} className="text-blue-400" />必備清單</h3>
+        <ul className="text-sm text-slate-400 space-y-2.5 list-disc pl-4 marker:text-slate-600">
+          <li>環保筷 + 碗 (吃泡麵用)</li><li>洗衣球 (民宿可以洗衣服)</li><li>ESIM / 網卡</li><li>暖暖包 (12月很冷)</li><li>牙刷 (有些環保飯店不提供)</li>
         </ul>
       </div>
     </div>
@@ -971,9 +961,10 @@ const App = () => {
   const currentDayData = itineraryData.find(d => d.day === selectedDay);
 
   return (
-    <div className="min-h-screen bg-slate-950 font-sans text-slate-200 pb-24">
-      {/* Header - Dark Theme */}
-      <header className="sticky top-0 bg-slate-900 text-white z-50 px-5 pt-8 pb-4 shadow-xl border-b border-slate-800 rounded-b-3xl">
+    <div className="flex h-screen bg-slate-950 text-slate-200 overflow-hidden flex-col">
+      
+      {/* Header */}
+      <header className="sticky top-0 bg-slate-900 text-white z-50 px-5 pt-8 pb-4 shadow-xl border-b border-slate-800 rounded-b-3xl shrink-0">
         <div className="flex justify-between items-end mb-4">
           <div>
             <h1 className="text-2xl font-black tracking-tight text-slate-100">關西補遺憾之旅</h1>
@@ -981,7 +972,7 @@ const App = () => {
           </div>
           {/* Live Weather Widget in Header */}
           <div className="flex flex-col items-end gap-1">
-             <LiveWeatherWidget />
+             <LiveWeatherWidget cityCode={currentDayData.cityCode} />
              <button onClick={() => setActiveTab('info')} className={`flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold transition-all ${activeTab === 'info' ? 'bg-rose-600 text-white' : 'bg-slate-800 text-slate-300 hover:bg-slate-700 border border-slate-700'}`}>
                <Info size={14} /> 資訊
              </button>
@@ -1000,28 +991,30 @@ const App = () => {
         )}
       </header>
 
-      {/* Main Content */}
-      <main className="max-w-md mx-auto pt-6">
-        {activeTab === 'itinerary' ? (
-          <div className="px-5 animate-fade-in">
-            {/* Day Header */}
-            <div className="mb-4 flex justify-between items-center">
-              <h2 className="text-lg font-bold text-slate-200 border-l-4 border-rose-500 pl-3">{currentDayData.date} 行程</h2>
-              <EstimatedWeatherLabel weather={currentDayData.weather} />
-            </div>
-            {/* Timeline Events */}
-            <div className="space-y-4">
-              {currentDayData.events.map((event, index) => (
-                <EventCard key={index} event={event} />
-              ))}
-            </div>
-            <div className="h-12"/>
-          </div>
-        ) : activeTab === 'tools' ? (
-          <ToolsSection currentDay={selectedDay} />
-        ) : (
-          <InfoSection />
-        )}
+      {/* Main Content Area - Full Width List */}
+      <main className="flex-1 h-full overflow-y-auto relative bg-slate-950 scroll-smooth">
+        <div className="max-w-md mx-auto min-h-full pb-24 pt-6">
+            
+            {activeTab === 'itinerary' ? (
+             <div className="px-5 animate-fade-in">
+               <div className="mb-4 flex justify-between items-center">
+                 <h2 className="text-lg font-bold text-slate-200 border-l-4 border-rose-500 pl-3">{currentDayData.date} 行程</h2>
+                 <EstimatedWeatherLabel weather={currentDayData.weather} />
+               </div>
+               <div className="space-y-4">
+                 {currentDayData.events.map((event, index) => (
+                   <EventCard key={index} event={event} />
+                 ))}
+               </div>
+               <div className="h-12 text-center text-slate-700 text-xs mt-8">End of Day {selectedDay}</div>
+             </div>
+           ) : activeTab === 'tools' ? (
+             <ToolsSection currentDay={selectedDay} />
+           ) : (
+             <InfoSection />
+           )}
+
+        </div>
       </main>
 
       {/* Floating Bottom Nav - Dark Mode */}
@@ -1037,7 +1030,14 @@ const App = () => {
         </button>
       </nav>
 
-      <style>{` .scrollbar-hide::-webkit-scrollbar { display: none; } .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; } body { background-color: #020617; } `}</style>
+      <style>{`
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+        body { background-color: #020617; }
+      `}</style>
     </div>
   );
 };

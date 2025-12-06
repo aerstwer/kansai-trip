@@ -169,8 +169,7 @@ const itineraryData = [
         time: '17:30',
         title: '四條河原町逛街',
         subtitle: '購物時間',
-        tips: '1. 唐吉訶德 京都四條河原町店<br/>2. 3coins<br/>3. 寶可夢中心京都店 (高島屋)',
-        coords: '3COINS plus Kawaramachi Opa store'
+        tips: '1. 唐吉訶德 京都四條河原町店<br/>2. 3coins<br/>3. 寶可夢中心京都店 (高島屋)'
         coords: 'Pokemon Center Kyoto'
       },
       {
@@ -1044,4 +1043,5 @@ const App = () => {
 };
 
 export default App;
+
 

@@ -77,125 +77,140 @@ const itineraryData = [
   {
     day: 2,
     date: '12/21 (日)',
-    location: '京都',
+    location: '京都北區',
     cityCode: 'kyoto',
     weather: { temp: '6°C', condition: 'sunny' },
     events: [
       {
         type: 'info',
-        time: '必買',
-        title: '地鐵巴士一日券',
-        subtitle: '省錢攻略',
-        tips: '今日車資預估 ¥1,150，買券省 ¥50 且方便！',
+        time: '必買票券',
+        title: '地鐵・巴士一日券',
+        subtitle: '售價 ¥1,100',
+        highlight: '今日行程必備',
+        tips: '除叡山電車外，今日大部分交通皆可使用此券，省錢又省事！',
         coords: 'Kyoto Station Bus Terminal'
       },
       {
         type: 'transport',
-        time: '08:00',
-        title: '前往晴明神社',
-        subtitle: '搭乘市巴士 9 號 (約25分)',
-        notes: '從京都站前 B1 乘車處搭乘 9 號，至「一條戻橋・晴明神社前」下車。',
-        coords: 'Seimei Shrine'
-      },
-      {
-        type: 'attraction',
         time: '08:30',
-        title: '晴明神社 & 靈光殿天滿宮',
-        subtitle: '陰陽師聖地',
-        highlight: '新增景點',
-        tips: '參拜順序：先去晴明神社看五芒星，再去附近的靈光殿天滿宮。',
-        coords: 'Seimei Shrine'
-      },
-      {
-        type: 'transport',
-        time: '09:45',
         title: '前往下鴨神社',
-        subtitle: '巴士 (東西向移動)201 203 205 ',
-        tips: '若是搭市巴士，一定要注意「後門上、前門下」的搭車規則（前門下車刷卡／付費）',
-        notes: '搭乘巴士前往「河源町今出川」站。',
+        subtitle: '市巴士 4 / 205',
+        tips: '搭到下鴨神社前',
+        notes: '從京都站出發，車程約 25-30 分鐘。<span class="text-emerald-400 font-bold">✔ 一日券可用</span>',
         coords: 'Shimogamo Shrine'
       },
       {
         type: 'attraction',
-        time: '10:15',
+        time: '09:00',
         title: '下鴨神社',
-        subtitle: '世界遺產',
-        tips: '必買: 「媛守」。參拜後可穿越「糾之森」直接步行至出町柳站 (約10分鐘)，超順路！',
+        subtitle: '糺之森散策',
+        tips: '建議路線：樓門 → 本殿參拜 → 漫步糺之森。',
         coords: 'Shimogamo Shrine'
       },
       {
         type: 'transport',
-        time: '11:30',
-        title: '出町柳 → 貴船',
-        subtitle: '叡山電車 (往鞍馬/貴船口)',
-        notes: '從出町柳站搭乘，沿途欣賞風景。<b>此段不包含在一日券內</b>。',
+        time: '09:55',
+        title: '出町柳 → 貴船口',
+        subtitle: '叡山電鐵 (約27分)',
+        notes: '步行約10分鐘至出町柳站搭車。<br/><span class="text-rose-400 font-bold">❌ 一日券不可用 (¥340)</span>',
         coords: 'Demachiyanagi Station'
       },
       {
         type: 'attraction',
-        time: '12:15',
-        title: '貴船神社 (含午餐)',
-        subtitle: '結緣聖地',
-        tips: '必玩: 水占卜。午餐可在貴船街道享用。',
+        time: '10:30',
+        title: '貴船神社',
+        subtitle: '本宮、結社、奧宮',
+        tips: '轉乘京都巴士33號(5分)抵達。山路濕滑請注意腳步。',
         coords: 'Kibune Shrine'
       },
       {
         type: 'transport',
-        time: '14:30',
-        title: '出町柳 → 金閣寺',
-        subtitle: '搭乘巴士 102/205/1 號',
-        notes: '下山回到出町柳站，轉乘巴士直達金閣寺道。',
+        time: '12:00',
+        title: '返回出町柳',
+        subtitle: '巴士 + 叡山電鐵',
+        notes: '建議提早排隊搭巴士回貴船口，再搭電車回出町柳。<span class="text-rose-400 font-bold">❌ 一日券不可用</span>',
+        coords: 'Kibuneguchi Station'
+      },
+      {
+        type: 'transport',
+        time: '12:55',
+        title: '前往晴明神社',
+        subtitle: '巴士 205 (約16分)',
+        notes: '出町柳站前搭乘。<span class="text-emerald-400 font-bold">✔ 一日券可用</span>',
+        coords: 'Seimei Shrine'
+      },
+      {
+        type: 'attraction',
+        time: '13:00',
+        title: '晴明神社 & 靈光殿',
+        subtitle: '陰陽師聖地',
+        tips: '兩座神社步行 3 分鐘可達。',
+        coords: 'Seimei Shrine'
+      },
+      {
+        type: 'transport',
+        time: '13:30',
+        title: '前往京都御所',
+        subtitle: '巴士 9 / 12 / 51',
+        notes: '車程約10分鐘。<span class="text-emerald-400 font-bold">✔ 一日券可用</span>',
+        coords: 'Kyoto Imperial Palace'
+      },
+      {
+        type: 'attraction',
+        time: '13:40',
+        title: '京都御所 (清和院)',
+        subtitle: '買菊紋皮革小錢包',
+        tips: '從「烏丸下立売」入口進入。無需預約。',
+        coords: 'Kyoto Imperial Palace'
+      },
+      {
+        type: 'transport',
+        time: '14:10',
+        title: '前往金閣寺',
+        subtitle: '巴士 12 (最推)',
+        notes: '也可搭 59/204/205。車程約 20 分。<span class="text-emerald-400 font-bold">✔ 一日券可用</span>',
         coords: 'Kinkaku-ji'
       },
       {
         type: 'attraction',
-        time: '15:30',
-        title: '金閣寺 (鹿苑寺)',
-        subtitle: '京都必去景點',
-        tips: '趕在 17:00 關門前參觀，夕陽下的金閣最美。',
+        time: '14:35',
+        title: '金閣寺',
+        subtitle: '鹿苑寺',
+        tips: '人多時建議順時針繞園拍照，避開逆光。',
         coords: 'Kinkaku-ji'
       },
       {
         type: 'transport',
-        time: '16:45',
-        title: '金閣寺道 → 四條河原町',
-        subtitle: '巴士 204/205/59/101 等',
-        highlight: '注意方向',
-        notes: '務必確認站牌方向是往「河原町/四條」方向才搭。',
-        coords: 'Shijo Kawaramachi'
+        time: '15:20',
+        title: '前往四条河原町',
+        subtitle: '巴士 12 / 205 / 204',
+        notes: '前往錦市場/商圈。車程約 25 分。<span class="text-emerald-400 font-bold">✔ 一日券可用</span>',
+        coords: 'Nishiki Market'
       },
       {
         type: 'attraction',
-        time: '17:30',
-        title: '四條河原町逛街',
-        subtitle: '購物時間',
-        tips: '1. 唐吉訶德 京都四條河原町店<br/>2. 3coins<br/>3. 寶可夢中心京都店 (高島屋)',
-        coords: 'Pokemon Center Kyoto'
-      },
-      {
-        type: 'food',
-        time: '18:30',
-        title: 'I\'m donut? (甜甜圈)',
-        subtitle: '人氣甜點',
-        tips: '必吃原味生甜甜圈！',
+        time: '15:50',
+        title: '逛街 & 點心時間',
+        subtitle: '3coins / I\'m donut? / Eggslut',
+        tips: 'I\'m donut? 甜甜圈、Eggslut 漢堡都在附近，晚餐前的小確幸。',
         coords: 'I\'m donut? Kyoto'
-      },
-      {
-        type: 'food',
-        time: '19:30',
-        title: 'Eggslut (漢堡)',
-        subtitle: '晚餐前墊胃',
-        notes: '就在 ENEN 燒肉附近。',
-        coords: 'Eggslut Kyoto Shijo'
       },
       {
         type: 'food',
         time: '20:30',
         title: 'ENEN 燒肉',
         subtitle: '晚餐',
-        tips: '必點: 手毬肉壽司 (需預約)',
-        highlight: '已預約',
+        highlight: '預約 20:30',
+        tips: '盡情享受手毬肉壽司！',
         coords: 'https://maps.app.goo.gl/wKZtZ6Vfz6KTLAFU9'
+      },
+      {
+        type: 'transport',
+        time: '22:00',
+        title: '返回京都站',
+        subtitle: '地鐵烏丸線',
+        notes: '步行至烏丸站搭車 (約5分)。<span class="text-emerald-400 font-bold">✔ 一日券可用</span>',
+        coords: 'Karasuma Station'
       }
     ]
   },
@@ -378,60 +393,51 @@ const itineraryData = [
     weather: { temp: '7°C', condition: 'cloudy' },
     events: [
       {
-        type: 'transport',
-        time: '07:40',
-        title: '前往三條京阪',
-        subtitle: '地鐵烏丸線+東西線 (¥260)',
-        notes: '京都站 →烏丸御池(轉乘) → 三條京阪站 (約25分)。',
-        coords: 'Sanjo Station Kyoto'
-      },
-      {
         type: 'info',
-        time: '08:10',
-        title: '兌換京阪電車一日券',
-        subtitle: '京阪三條站指定席窗口',
-        highlight: '使用 Have Fun in Kansai Pass QR Code 關西樂享周遊券',
-        coords: 'Sanjo Station Kyoto'
-      },
-      {
-        type: 'transport',
-        time: '08:30',
-        title: '前往石清水八幡宮',
-        subtitle: '京阪本線 (約30分鐘)',
-        coords: 'Iwashimizu-Hachimangu Station'
+        time: '券',
+        title: '京阪電車一日券',
+        subtitle: '三條站兌換',
+        coords: 'Sanjo Station Kyoto',
+        size: 'small',
+        theme: 'yellow'
       },
       {
         type: 'attraction',
         time: '09:00',
-        title: '石清水八幡宮參拜',
-        subtitle: '搭乘男山纜車上山 (來回¥400)',
-        tips: '看點：勝運守、走井餅、御朱印、展望台眺望木津川流域。',
-        coords: 'Iwashimizu Hachimangu'
-      },
-      {
-        type: 'transport',
-        time: '11:00',
-        title: '八幡市站 → 宇治站',
-        subtitle: '京阪本線 + 宇治線 (約25分鐘)',
-        coords: 'Keihan Uji Station'
+        title: '石清水八幡宮',
+        subtitle: '搭纜車',
+        coords: 'Iwashimizu Hachimangu',
+        size: 'medium',
+        theme: 'red'
       },
       {
         type: 'food',
         time: '11:30',
-        title: '宇治散策 & 午餐',
-        subtitle: '平等院/宇治上神社/肉屋黑川',
-        highlight: '注意: 肉屋黑川 14:00 結束營業',
-        tips: '1. 平等院鳳凰堂 (¥600)<br/>2. 宇治神社、宇治上神社<br/>3. 中村藤吉(抹茶) or 肉屋黑川(和牛丼)<br/>4. 河畔塔之島漫步',
-        coords: 'Nikuya Kurokawa Uji'
+        title: '午餐戰場',
+        subtitle: '肉屋黑川',
+        highlight: '14:00 關門',
+        tips: '排不到就吃中村藤吉！',
+        coords: 'Nikuya Kurokawa Uji',
+        size: 'large',
+        theme: 'orange'
+      },
+      {
+        type: 'attraction',
+        time: '13:00',
+        title: '平等院',
+        subtitle: '10圓硬幣',
+        coords: 'Byodoin Temple',
+        size: 'medium',
+        theme: 'green'
       },
       {
         type: 'transport',
         time: '16:15',
-        title: '宇治 → 京都站',
-        subtitle: '搭乘 JR 奈良線',
-        highlight: '為了 17:00 teamLab，請務必準時',
-        notes: '選擇 JR 回京都比較快，約 20-30 分鐘抵達京都站。',
-        coords: 'Kyoto Station'
+        title: '返回京都站',
+        subtitle: '搭 JR 較快',
+        coords: 'Uji Station (JR)',
+        size: 'small',
+        theme: 'blue'
       },
       {
         type: 'attraction',
@@ -457,7 +463,9 @@ const itineraryData = [
         title: '移動日',
         subtitle: '寄放行李',
         notes: 'JR難波 → 新大阪(寄行李) → 箕面萱野站。',
-        coords: 'Shin-Osaka Station'
+        coords: 'Shin-Osaka Station',
+        size: 'medium',
+        theme: 'blue'
       },
       {
         type: 'attraction',
@@ -465,14 +473,18 @@ const itineraryData = [
         title: '勝尾寺',
         subtitle: '達摩滿山',
         tips: '從箕面萱野搭巴士29號或計程車。',
-        coords: 'Katsuo-ji'
+        coords: 'Katsuo-ji',
+        size: 'large',
+        theme: 'red'
       },
       {
         type: 'transport',
         time: '13:00',
         title: '前往姬路',
         subtitle: '新幹線',
-        coords: 'Himeji Station'
+        coords: 'Himeji Station',
+        size: 'small',
+        theme: 'blue'
       },
       {
         type: 'attraction',
@@ -480,14 +492,18 @@ const itineraryData = [
         title: '姬路城',
         subtitle: '白鷺城',
         tips: '世界遺產，參觀約2小時。',
-        coords: 'Himeji Castle'
+        coords: 'Himeji Castle',
+        size: 'large',
+        theme: 'white'
       },
       {
         type: 'transport',
         time: '17:00',
         title: '前往大阪難波',
         subtitle: '姬路→新大阪→難波',
-        coords: 'Namba Station'
+        coords: 'Namba Station',
+        size: 'medium',
+        theme: 'blue'
       },
       {
         type: 'hotel',
@@ -495,7 +511,9 @@ const itineraryData = [
         title: 'PG 黑門公寓',
         subtitle: 'Check-in',
         notes: '位於黑門市場附近。',
-        coords: 'PG Kuromon Apartment'
+        coords: 'PG Kuromon Apartment',
+        size: 'medium',
+        theme: 'purple'
       }
     ]
   },
@@ -512,7 +530,9 @@ const itineraryData = [
         title: 'MooKEN',
         subtitle: '脆皮泡芙',
         tips: '只開到 14:00',
-        coords: 'MooKEN Osaka'
+        coords: 'MooKEN Osaka',
+        size: 'medium',
+        theme: 'orange'
       },
       {
         type: 'attraction',
@@ -520,14 +540,18 @@ const itineraryData = [
         title: '綱敷天神社',
         subtitle: '御旅社',
         notes: '梅田茶屋町散步。',
-        coords: 'Tsunashiki Tenjinsha Otabisha'
+        coords: 'Tsunashiki Tenjinsha Otabisha',
+        size: 'medium',
+        theme: 'indigo'
       },
       {
         type: 'attraction',
         time: '15:00',
         title: '空中庭園',
         subtitle: '梅田展望台',
-        coords: 'Umeda Sky Building'
+        coords: 'Umeda Sky Building',
+        size: 'large',
+        theme: 'blue'
       },
       {
         type: 'food',
@@ -536,7 +560,9 @@ const itineraryData = [
         subtitle: '燒肉晚餐',
         highlight: '已預約',
         tips: '攻略: A5和牛吃到飽，請空腹前往!',
-        coords: 'Yakiniku Nikuhachi'
+        coords: 'Yakiniku Nikuhachi',
+        size: 'large',
+        theme: 'orange'
       }
     ]
   },
@@ -553,14 +579,18 @@ const itineraryData = [
         title: '難波八阪神社',
         subtitle: '大獅子頭',
         tips: '吸走厄運！',
-        coords: 'Namba Yasaka Shrine'
+        coords: 'Namba Yasaka Shrine',
+        size: 'large',
+        theme: 'green'
       },
       {
         type: 'food',
         time: '18:00',
         title: '自由晚餐',
         subtitle: '大阪燒/燒肉',
-        coords: 'Dotonbori'
+        coords: 'Dotonbori',
+        size: 'medium',
+        theme: 'orange'
       }
     ]
   },
@@ -576,17 +606,19 @@ const itineraryData = [
         time: '11:00',
         title: '臨空城 Outlet',
         subtitle: '最後衝刺',
-        highlight: '優惠: 記得去 Service Center 領外國人 Coupon',
-        tips: '必逛: Nike, Adidas, GAP, Coach',
-        coords: 'Rinku Premium Outlets'
+        coords: 'Rinku Premium Outlets',
+        size: 'large',
+        theme: 'pink'
       },
       {
         type: 'transport',
         time: '20:10',
-        title: '返程航班',
-        subtitle: '大阪 20:10 → 高雄 22:45',
-        notes: '請於 18:10 前抵達機場櫃檯報到。',
-        coords: 'Kansai International Airport'
+        title: '回家囉',
+        subtitle: '大阪 → 高雄',
+        notes: '18:10 前到機場。',
+        coords: 'Kansai International Airport',
+        size: 'medium',
+        theme: 'blue'
       }
     ]
   }
@@ -642,17 +674,6 @@ const LiveWeatherWidget = ({ cityCode }) => {
     <div className="bg-slate-800/80 px-3 py-1.5 rounded-full flex items-center gap-2 text-slate-100 text-xs font-bold border border-slate-700/50 backdrop-blur-sm transition-all duration-500">
       <Icon size={14} className="text-yellow-300" />
       <span>{target.name} 現在 {Math.round(weather.temperature)}°C</span>
-    </div>
-  );
-};
-
-// Static Weather Label (for future dates)
-const EstimatedWeatherLabel = ({ weather }) => {
-  const Icon = weather.condition === 'sunny' ? Sun : CloudRain;
-  return (
-    <div className="flex items-center gap-1.5 text-slate-400 text-xs bg-slate-900 px-3 py-1.5 rounded-full border border-slate-800">
-      <Icon size={12} className={weather.condition === 'sunny' ? 'text-amber-400' : 'text-blue-400'} />
-      <span>{weather.temp} (12月均溫)</span>
     </div>
   );
 };
@@ -999,7 +1020,6 @@ const App = () => {
              <div className="px-5 animate-fade-in">
                <div className="mb-4 flex justify-between items-center">
                  <h2 className="text-lg font-bold text-slate-200 border-l-4 border-rose-500 pl-3">{currentDayData.date} 行程</h2>
-                 <EstimatedWeatherLabel weather={currentDayData.weather} />
                </div>
                <div className="space-y-4">
                  {currentDayData.events.map((event, index) => (
@@ -1042,6 +1062,4 @@ const App = () => {
   );
 };
 
-export default App;```
-
-
+export default App;

@@ -16,7 +16,6 @@ const firebaseConfig = {
 };
 
 const appId = typeof __app_id !== 'undefined' ? __app_id : 'kansai-travel-mate';
-// --- APP ID SANITIZATION ---
 const sanitizedAppId = appId.replace(/[/\.]/g, '_');
 
 
@@ -136,6 +135,7 @@ const itineraryData = [
         time: '12:55',
         title: '前往晴明神社',
         subtitle: '巴士 205 (約16分)',
+        tips: '搭到 一条戻橋・晴明神社前',
         notes: '出町柳站前搭乘。<span class="text-emerald-400 font-bold">✔ 一日券可用</span>',
         coords: 'Seimei Shrine'
       },
@@ -558,7 +558,7 @@ const itineraryData = [
         time: '20:00',
         title: 'A5 肉十八番',
         subtitle: '燒肉晚餐',
-        highlight: '已預約',
+        highlight: '預約: 20:00',
         tips: '攻略: A5和牛吃到飽，請空腹前往!',
         coords: 'Yakiniku Nikuhachi',
         size: 'large',
@@ -613,12 +613,10 @@ const itineraryData = [
       {
         type: 'transport',
         time: '20:10',
-        title: '回家囉',
-        subtitle: '大阪 → 高雄',
-        notes: '18:10 前到機場。',
-        coords: 'Kansai International Airport',
-        size: 'medium',
-        theme: 'blue'
+        title: '返程航班',
+        subtitle: '大阪 20:10 → 高雄 22:45',
+        notes: '請於 18:10 前抵達機場櫃檯報到。',
+        coords: 'Kansai International Airport'
       }
     ]
   }
@@ -674,6 +672,17 @@ const LiveWeatherWidget = ({ cityCode }) => {
     <div className="bg-slate-800/80 px-3 py-1.5 rounded-full flex items-center gap-2 text-slate-100 text-xs font-bold border border-slate-700/50 backdrop-blur-sm transition-all duration-500">
       <Icon size={14} className="text-yellow-300" />
       <span>{target.name} 現在 {Math.round(weather.temperature)}°C</span>
+    </div>
+  );
+};
+
+// Static Weather Label (for future dates)
+const EstimatedWeatherLabel = ({ weather }) => {
+  const Icon = weather.condition === 'sunny' ? Sun : CloudRain;
+  return (
+    <div className="flex items-center gap-1.5 text-slate-400 text-xs bg-slate-900 px-3 py-1.5 rounded-full border border-slate-800">
+      <Icon size={12} className={weather.condition === 'sunny' ? 'text-amber-400' : 'text-blue-400'} />
+      <span>{weather.temp} (12月均溫)</span>
     </div>
   );
 };
@@ -1020,6 +1029,7 @@ const App = () => {
              <div className="px-5 animate-fade-in">
                <div className="mb-4 flex justify-between items-center">
                  <h2 className="text-lg font-bold text-slate-200 border-l-4 border-rose-500 pl-3">{currentDayData.date} 行程</h2>
+                 <EstimatedWeatherLabel weather={currentDayData.weather} />
                </div>
                <div className="space-y-4">
                  {currentDayData.events.map((event, index) => (

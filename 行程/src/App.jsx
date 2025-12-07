@@ -189,7 +189,7 @@ const itineraryData = [
       },
       {
         type: 'attraction',
-        time: '15:50',
+        time: '17:50',
         title: '逛街 & 點心時間',
         subtitle: '3coins / I\'m donut? / Eggslut',
         tips: 'I\'m donut? 甜甜圈、Eggslut 漢堡都在附近，晚餐前的小確幸。',
@@ -1073,4 +1073,5 @@ const App = () => {
 };
 
 export default App;
+
 

@@ -181,7 +181,7 @@ const itineraryData = [
       },
       {
         type: 'transport',
-        time: '15:20',
+        time: '17:20',
         title: '前往四条河原町',
         subtitle: '巴士 12 / 205 / 204',
         notes: '前往錦市場/商圈。車程約 25 分。<span class="text-emerald-400 font-bold">✔ 一日券可用</span>',
@@ -1073,3 +1073,4 @@ const App = () => {
 };
 
 export default App;
+

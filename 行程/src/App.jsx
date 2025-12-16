@@ -574,7 +574,7 @@ const itineraryData = [
         time: '11:00',
         title: 'MooKEN',
         subtitle: '脆皮泡芙',
-        tips: '只開到 14:00',
+        tips: '10:30前排隊最穩',
         coords: 'MooKEN Osaka'
       },
       {
@@ -1106,3 +1106,4 @@ const App = () => {
 };
 
 export default App;
+

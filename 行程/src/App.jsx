@@ -138,44 +138,44 @@ const itineraryData = [
         notes: '建議提早排隊搭巴士回貴船口，再搭電車回出町柳。<span class="text-rose-400 font-bold">❌ 一日券不可用</span>',
         coords: 'Kibuneguchi Station'
       },
-      {
+            {
         type: 'transport',
-        time: '12:55',
-        title: '前往晴明神社',
-        subtitle: '巴士 205 (約16分)',
-        notes: '出町柳站前搭乘。<span class="text-emerald-400 font-bold">✔ 一日券可用</span>',
-        coords: 'Seimei Shrine'
+        time: '12:45',
+        title: '前往京都御所',
+        subtitle: '搭巴士 201 203過去 ',
+        notes: '車程約(6分鐘)。<span class="text-emerald-400 font-bold">✔ 一日券可用</span>',
+        coords: 'Kyoto Imperial Palace'
+      },
+           {
+        type: 'attraction',
+        time: '13:10',
+        title: '京都御所 (清和院)',
+        subtitle: '買菊紋皮革小錢包',
+        tips: '從「乾御門」入口進入。無需預約。',
+        coords: 'Nakadachiuri Rest Area'
       },
       {
         type: 'attraction',
-        time: '13:00',
-        title: '晴明神社 & 靈光殿',
+        time: '12:55',
+        title: '前往靈光殿',
+        subtitle: '走路約(10分鐘)',
+        notes: '走過去就好。<span class="text-emerald-400 font-bold"></span>',
+        coords: '靈光殿天滿宮'
+      },
+      {
+        type: 'attraction',
+        time: '13:10',
+        title: '晴明神社',
         subtitle: '陰陽師聖地',
         tips: '兩座神社步行 3 分鐘可達。',
         coords: 'Seimei Shrine'
       },
       {
         type: 'transport',
-        time: '13:30',
-        title: '前往京都御所',
-        subtitle: '巴士 9 / 12 / 51',
-        notes: '車程約10分鐘。<span class="text-emerald-400 font-bold">✔ 一日券可用</span>',
-        coords: 'Kyoto Imperial Palace'
-      },
-      {
-        type: 'attraction',
-        time: '13:40',
-        title: '京都御所 (清和院)',
-        subtitle: '買菊紋皮革小錢包',
-        tips: '從「烏丸下立売」入口進入。無需預約。',
-        coords: 'Kyoto Imperial Palace'
-      },
-      {
-        type: 'transport',
         time: '14:10',
         title: '前往金閣寺',
         subtitle: '巴士 12 (最推)',
-        notes: '也可搭 59/204/205。車程約 20 分。<span class="text-emerald-400 font-bold">✔ 一日券可用</span>',
+        notes: '也可搭 59/204/205。車程約 20 分，從門口搭車即可。<span class="text-emerald-400 font-bold">✔ 一日券可用</span>',
         coords: 'Kinkaku-ji'
       },
       {
@@ -541,7 +541,7 @@ const itineraryData = [
         title: '晚餐：石田屋',
         subtitle: '神戶牛燒肉',
         highlight: '已預約',
-        tips: '位於三宮站北野坂。',
+        tips: '位於三宮站北野坂 新神戶 → 三宮：地鐵（2 分鐘，¥210，刷西瓜卡）。',
         coords: 'https://maps.app.goo.gl/6Dyqw6bmbcab9iyS9'
       },
       {
@@ -549,7 +549,7 @@ const itineraryData = [
         time: '19:00',
         title: '返回新大阪 → 難波',
         subtitle: 'JR三宮回新大阪 + 御堂筋線',
-        highlight: 'JR Pass 適用',
+        highlight: 'JR Pass 適用 御堂筋刷西瓜卡',
         notes: '35分鐘回新大阪拿行李，再轉地鐵回難波飯店。',
         coords: 'Shin-Osaka Station'
       },
@@ -1106,4 +1106,3 @@ const App = () => {
 };
 
 export default App;
-

@@ -141,7 +141,7 @@ const itineraryData = [
         time: '09:00',
         title: '下鴨神社',
         subtitle: '糺之森散策',
-        tips: '建議路線：樓門 → 本殿參拜 → 漫步糺之森。',
+        tips: '建議路線：樓門 → 本殿參拜 → 漫步糺之森另外要去相生社買戒指御守 過季的回程可以去雜太社看看。',
         coords: 'Shimogamo Shrine'
       },
       {
@@ -219,18 +219,58 @@ const itineraryData = [
       {
         type: 'transport',
         time: '15:20',
-        title: '前往四条河原町',
-        subtitle: '巴士 12 / 205 / 204',
+        title: '前往四条河原町(搭到四条烏丸站)',
+        subtitle: '巴士 12(最推) / 205 / 204',
         notes: '前往錦市場/商圈。車程約 25 分。<span class="text-emerald-400 font-bold">✔ 一日券可用</span>',
         coords: 'Nishiki Market'
       },
       {
         type: 'attraction',
         time: '15:50',
-        title: '逛街 & 點心時間',
-        subtitle: '3coins / I\'m donut? / Eggslut',
+        title: '逛街 ',
+        subtitle: '寶可夢中心(京都店)',
+        tips: '有限定皮卡丘。',
+        coords: '寶可夢中心京都店'
+      },
+      {
+        type: 'attraction',
+        time: '16:30',
+        title: '點心時間',
+        subtitle: 'SHAKE SHACK 京都四條烏丸店',
+        tips: '肚子餓可以先吃，晚餐前的小確幸。',
+        coords: 'SHAKE SHACK 京都四條烏丸店'
+      },
+      {
+        type: 'attraction',
+        time: '15:50',
+        title: '買總本家河道屋(在大丸京都店b1)',
+        subtitle: '大丸京都店',
+        tips: '買總本家河道屋餅乾。',
+        coords: '大丸京都店'
+      },
+      {
+        type: 'attraction',
+        time: '15:50',
+        title: '逛街 & 點心時間(如果還會餓)',
+        subtitle: ' I\'m donut? / Eggslut',
         tips: 'I\'m donut? 甜甜圈、Eggslut 漢堡都在附近，晚餐前的小確幸。',
-        coords: 'I\'m donut? Kyoto'
+        coords: 'I’m donut ? 京都店'
+      },
+      {
+        type: 'attraction',
+        time: '15:50',
+        title: '逛街',
+        subtitle: '3coins',
+        tips: '便宜小物。',
+        coords: '3COINS plus Kawaramachi Opa store'
+      },
+      {
+        type: 'attraction',
+        time: '15:50',
+        title: '逛街',
+        subtitle: '無印良品 京都BAL店',
+        tips: '便宜小物。',
+        coords: '無印良品 京都BAL店'
       },
       {
         type: 'food',
@@ -246,7 +286,7 @@ const itineraryData = [
         time: '22:00',
         title: '返回京都站',
         subtitle: '地鐵烏丸線',
-        notes: '步行至烏丸站搭車 (約5分)。<span class="text-emerald-400 font-bold">✔ 一日券可用</span>',
+        notes: '步行至四条搭車 (約5分)。<span class="text-emerald-400 font-bold">✔ 一日券可用</span>',
         coords: 'Karasuma Station'
       }
     ]
